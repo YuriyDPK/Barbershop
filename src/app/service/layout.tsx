@@ -7,16 +7,16 @@ export default function RootLayout({
     children: React.ReactNode
   }) {
     return (
-      <html lang="en">
-        <body>
-          {/* Layout UI */}
-          <main>
+      // <html lang="en">
+      //   <body>
+          
+          <div>
             
             {children}
-            <Link href="http://localhost:3000/">Сюдэнс</Link>
+            
 
-          </main>
-        </body>
-      </html>
+          </div>
+      //   </body>
+      // </html>
     )
   }
