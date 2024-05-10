@@ -7,9 +7,11 @@ import { cookies } from "next/headers";
 export default async function Service({
   searchParams,
 }: {
-  searchParams?: { page?: string };
+  searchParams?: { page?: string; sortBy?: string };
 }) {
   let page = searchParams?.page ? parseInt(searchParams?.page) : 1;
+  let sortBy = searchParams?.sortBy || "price"; // Default sorting by price if sortBy param is not provided
+
   const count = 4;
   const totalServices = await db.service.count();
   const maxPage = Math.ceil(totalServices / count);
@@ -27,16 +29,33 @@ export default async function Service({
   const services = await db.service.findMany({
     skip: (page - 1) * count,
     take: count,
+    orderBy: { [sortBy]: "asc" }, // Sort by the selected sortBy parameter in ascending order
   });
 
   const cookieStore = cookies();
   const role = cookieStore.get("role");
   return (
-    <div className="p-4">
-      <Link href="/addService" className="bg-blue-400 p-4 py-2 mb-2">
-        Добавить товар
-      </Link>
-      <div className="grid grid-cols-6 gap-4">
+    <div className="p-4 mb-5 mx-auto">
+      <div className="flex justify-center items-center gap-2">
+        <h3>Сортировать по: </h3>
+        {
+          <Link
+            href={`?page=${page}&sortBy=price`}
+            className="bg-blue-100 p-1 rounded-md"
+          >
+            цене
+          </Link>
+        }
+        {
+          <Link
+            href={`?page=${page}&sortBy=title`}
+            className="bg-blue-100 p-1 rounded-md"
+          >
+            названию
+          </Link>
+        }
+      </div>
+      <div className="flex gap-4 mt-5 justify-center">
         {services.map((service, i) => {
           return (
             <Link
@@ -59,7 +78,7 @@ export default async function Service({
         })}
       </div>
       {/* Проверка на наличие предыдущей страницы */}
-      <div className="flex gap-2">
+      <div className="flex gap-2 justify-center mt-5">
         {page > 1 && <Link href={`?page=${page - 1}`}> Назад </Link>}
         <div className=" bg-blue-400 w-10 text-center rounded-xl">{page}</div>
         {/* Проверка на наличие следующей страницы */}

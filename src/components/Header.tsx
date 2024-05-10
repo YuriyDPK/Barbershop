@@ -15,6 +15,7 @@ const links = [
 export function Header() {
   // Получаем email пользователя из кук
   const isAuth = cookies().get("email");
+  const isAdmin = cookies().get("role");
 
   return (
     <div>
@@ -57,10 +58,18 @@ export function Header() {
             <div className="hidden lg:flex space-x-4">
               <Link
                 href="http://localhost:3000/user/account"
-                className="px-4 py-2 bg-gray-700 text-white rounded hover:bg-gray-600"
+                className="px-4 py-2 bg-gray-800 text-white rounded hover:bg-gray-700"
               >
                 Профиль
               </Link>
+              {isAdmin && isAdmin.value === "admin" && (
+                <Link
+                  href="http://localhost:3000/adminPanel"
+                  className="px-4 py-2 bg-yellow-700 text-white rounded hover:bg-yellow-800"
+                >
+                  Админ-панель
+                </Link>
+              )}
               <form
                 action="http://localhost:3000/api/users/logout"
                 method="GET"
