@@ -3,14 +3,16 @@ import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 import { cookies } from "next/headers";
+import SearchService from "@/components/SearchService";
 
 export default async function Service({
   searchParams,
 }: {
-  searchParams?: { page?: string; sortBy?: string };
+  searchParams?: { page?: string; sortBy?: string; name?: string };
 }) {
   let page = searchParams?.page ? parseInt(searchParams?.page) : 1;
-  let sortBy = searchParams?.sortBy || "price"; // Default sorting by price if sortBy param is not provided
+  let sortBy = searchParams?.sortBy || "price";
+  let name = searchParams?.name ? String(searchParams?.name) : "";
 
   const count = 4;
   const totalServices = await db.service.count();
@@ -29,9 +31,13 @@ export default async function Service({
   const services = await db.service.findMany({
     skip: (page - 1) * count,
     take: count,
-    orderBy: { [sortBy]: "asc" }, // Sort by the selected sortBy parameter in ascending order
+    orderBy: { [sortBy]: "asc" },
+    where: {
+      title: {
+        contains: name, // Поиск совпадений в поле title по переданному имени
+      },
+    },
   });
-
   const cookieStore = cookies();
   const role = cookieStore.get("role");
   return (
@@ -54,6 +60,7 @@ export default async function Service({
             названию
           </Link>
         }
+        <SearchService />
       </div>
       <div className="flex gap-4 mt-5 justify-center">
         {services.map((service, i) => {
