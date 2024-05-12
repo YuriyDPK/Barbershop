@@ -1,81 +1,85 @@
-"use client";
-import { fetchSession } from "@/hooks/session";
-import { FormEvent, useEffect, useState } from "react";
+import SetDataUser from "@/components/SetDataUser";
+import { cookies } from "next/headers";
+import { db } from "@/shared/db";
+import { redirect } from "next/navigation";
+import Link from "next/link";
+import EditReview from "@/components/buttons/EditReview";
 
-export default function Account() {
-  const [userName, setUsername] = useState("");
-  const [email, setEmail] = useState("");
-  const [updated, setUpdated] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isPending, setIsPending] = useState(false);
-
-  useEffect(() => {
-    const getSession = async () => {
-      try {
-        const session: any = await fetchSession();
-        setUsername(session.username);
-        setEmail(session.email);
-      } catch (error) {
-        alert("Ошибка при получении сесиии");
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    getSession();
-  }, [updated]);
-
-  const handleChangeUserData = async (e: FormEvent) => {
-    e.preventDefault();
-    setIsPending(true);
-    try {
-      await fetch("/api/users/changeUserData", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          username: userName,
-          email: email,
-        }),
-      });
-      alert("Данные изменены");
-
-      setUpdated(!updated);
-    } catch (error) {
-      alert("Прроизошла ошибка");
-    } finally {
-      setIsPending(false);
-    }
+export default async function Account({
+  searchParams,
+}: {
+  searchParams?: {
+    delReview?: string;
+    editReview: string;
+    reviewIdParam: number;
   };
-  if (isLoading)
-    return (
-      <div className="flex justify-center items-center h-screen">
-        <div>Загрузка...</div>
-      </div>
-    );
+}) {
+  const cookieStore = cookies();
+  const email = cookieStore.get("email").value;
+  const user = db.user.findUnique({ where: { email } });
+  if (!user) {
+    redirect("/login");
+  }
+  // query in db (Prisma) to get reviews include service
+
+  const reviews = await db.review.findMany({
+    where: {
+      userId: user.id,
+    },
+    include: { service: true, user: true },
+  });
+
+  if (searchParams?.delReview) {
+    const id = parseInt(searchParams.delReview);
+    await db.review.delete({ where: { id } });
+    redirect("/user/account");
+  }
+  if (searchParams?.editReview) {
+    const reviewIdParam = parseInt(searchParams.reviewIdParam);
+    // update the review content
+
+    const review = await db.review.update({
+      where: {
+        id: reviewIdParam,
+      },
+      data: {
+        content: searchParams?.editReview,
+      },
+    });
+    redirect("/user/account");
+  }
+
   return (
-    <form
-      className="border rounded-lg max-w-[600px] w-full mx-auto p-4 shadow mt-36 flex flex-col gap-2"
-      onSubmit={handleChangeUserData}
-    >
-      <input
-        type="text"
-        value={userName}
-        onChange={(e) => setUsername(e.target.value)}
-        className="border px-3 py-2 rounded-lg"
-      />
-      <input
-        type="text"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        className="border px-3 py-2 rounded-lg"
-      />
-      <button
-        className="bg-blue-500 h-12 rounded-lg text-white font-semibold disabled:opacity-50"
-        disabled={isPending}
-      >
-        {isPending ? "Загрузка..." : "Изменить"}
-      </button>
-    </form>
+    <div className="w-1/2 mx-auto mt-6">
+      <h1 className="text-center text-xl">Личный кабинет</h1>
+      <SetDataUser />
+
+      <div className="flex flex-col gap-2">
+        <h1 className="text-xl text-center mt-2">Отзывы оставленные вами</h1>
+        {reviews.map((review, i) => {
+          return (
+            <div key={i} className="mt-3">
+              <div className="flex flex-col ">
+                <div>
+                  <b>Услуга:</b> {review.service.title}
+                </div>
+                <div>
+                  <b>Клиент:</b> {review.user.username}
+                </div>
+                <div>
+                  <b>Отзыв:</b> {review.content}
+                </div>
+                <div className="flex flex-col gap-1">
+                  <EditReview
+                    serviceId={review.service.id}
+                    reviewId={review.id}
+                  />
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
   );
 }

@@ -38,6 +38,7 @@ export default async function Service({
       },
     },
   });
+
   const cookieStore = cookies();
   const role = cookieStore.get("role");
   return (
@@ -64,6 +65,7 @@ export default async function Service({
       </div>
       <div className="flex gap-4 mt-5 justify-center">
         {services.map((service, i) => {
+          console.log(service.id);
           return (
             <Link
               href={`/service/${service.id}`}

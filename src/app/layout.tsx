@@ -20,7 +20,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={font.className}>
         <Header />
-        <div className="h-screen">{children}</div>
+        <div className="min-h-screen mb-5">{children}</div>
         <Footer />
       </body>
     </html>
