@@ -15,12 +15,14 @@ export default async function Service({
 }) {
   // получаем data пользователя
   const cookieStore = cookies();
-  const role = cookieStore.get("role").value;
-  const email = cookieStore.get("email").value;
-
-  // Find the user by email to get their ID
-  const user = await db.user.findUnique({ where: { email } });
-  const userId = user?.id;
+  const role = cookieStore.get("role")?.value;
+  const email = cookieStore.get("email")?.value;
+  let user, userId;
+  if (email != null) {
+    // Find the user by email to get their ID
+    user = await db.user.findUnique({ where: { email } });
+    userId = user?.id;
+  }
 
   //работа с датой
   let date = searchParams?.date ? String(searchParams?.date) : "";
@@ -92,10 +94,21 @@ export default async function Service({
           height={200}
           className="w-full object-cover rounded-lg"
         />
-        <DeleteService serviceId={service.id} />
+        {role == "admin" ? (
+          <DeleteService serviceId={service.id} />
+        ) : (
+          <div></div>
+        )}
       </div>
-      <TakeOrder serviceId={params.id} />
-      <TakeReview serviceId={params.id} />
+      {email != null ? (
+        <>
+          <TakeOrder serviceId={params.id} />
+          <TakeReview serviceId={params.id} />
+        </>
+      ) : (
+        <div></div>
+      )}
+
       {/* create block with tailwind for show all reviews and username who create this review */}
       <div className="flex flex-col  mb-5  mt-5">
         <h2 className="text-xl font-semibold">Отзывы:</h2>

@@ -21,35 +21,38 @@ export default async function Service({
 }) {
   const cookieStore = cookies();
   const role = cookieStore.get("role");
-  const email = cookieStore.get("email").value;
+  const email = cookieStore.get("email")?.value;
+  let reviews, appointments, userId, user;
+  if (email !== null) {
+    // Find the user by email to get their ID
+    user = await db.user.findUnique({ where: { email } });
+    userId = user?.id;
 
-  // Find the user by email to get their ID
-  const user = await db.user.findUnique({ where: { email } });
-  const userId = user?.id;
-
-  const reviews = await db.review.findMany({
-    include: { service: true, user: true },
-  });
-  if (searchParams?.delReview) {
-    const id = parseInt(searchParams.delReview);
-    await db.review.delete({ where: { id } });
-    redirect("/adminPanel");
-  }
-
-  // get appointment from database
-  const appointments = await db.appointment.findMany({
-    include: { service: true, user: true },
-  });
-  if (searchParams?.editAppoinemnt) {
-    const id = parseInt(searchParams.appoinemntIdParam);
-    const editAppoinemnt = searchParams.editAppoinemnt;
-    await db.appointment.update({
-      where: { id },
-      data: { status: editAppoinemnt },
+    reviews = await db.review.findMany({
+      include: { service: true, user: true },
     });
-    redirect("/adminPanel");
-  }
+    if (searchParams?.delReview) {
+      const id = parseInt(searchParams.delReview);
+      await db.review.delete({ where: { id } });
+      redirect("/adminPanel");
+    }
 
+    // get appointment from database
+    appointments = await db.appointment.findMany({
+      include: { service: true, user: true },
+    });
+    if (searchParams?.editAppoinemnt) {
+      const id = parseInt(searchParams.appoinemntIdParam);
+      const editAppoinemnt = searchParams.editAppoinemnt;
+      await db.appointment.update({
+        where: { id },
+        data: { status: editAppoinemnt },
+      });
+      redirect("/adminPanel");
+    }
+  } else {
+    redirect("/user/login");
+  }
   return (
     <div className="p-4 lg:w-1/3 mx-auto">
       <h2 className="text-2xl font-semibold mb-4 text-black text-center">
