@@ -41,7 +41,7 @@ export default function RootLayout({
 
       if (response.ok) {
         // Регистрация успешна, перенаправляем пользователя на страницу профиля
-        window.location.href = "user/account"; // Замените "/profile" на путь к странице профиля
+        window.location.href = "/account"; // Замените "/profile" на путь к странице профиля
       } else {
         console.error("Ошибка при регистрации:", response.statusText);
       }

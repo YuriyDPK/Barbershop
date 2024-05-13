@@ -4,6 +4,7 @@ import { db } from "@/shared/db";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import EditReview from "@/components/buttons/EditReview";
+import DeleteAppointment from "@/components/buttons/DeleteAppointment";
 
 export default async function Account({
   searchParams,
@@ -12,6 +13,7 @@ export default async function Account({
     delReview?: string;
     editReview: string;
     reviewIdParam: number;
+    delAppointment?: number;
   };
 }) {
   const cookieStore = cookies();
@@ -28,10 +30,21 @@ export default async function Account({
     },
     include: { service: true, user: true },
   });
+  const appointments = await db.appointment.findMany({
+    where: {
+      userId: user.id,
+    },
+    include: { service: true, user: true },
+  });
 
   if (searchParams?.delReview) {
     const id = parseInt(searchParams.delReview);
     await db.review.delete({ where: { id } });
+    redirect("/user/account");
+  }
+  if (searchParams?.delAppointment) {
+    const id = parseInt(searchParams.delAppointment);
+    await db.appointment.delete({ where: { id } });
     redirect("/user/account");
   }
   if (searchParams?.editReview) {
@@ -73,6 +86,32 @@ export default async function Account({
                   <EditReview
                     serviceId={review.service.id}
                     reviewId={review.id}
+                  />
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+      <div className="flex flex-col gap-2">
+        <h1 className="text-xl text-center mt-2">Заявки оставленные вами</h1>
+        {appointments.map((appointment, i) => {
+          return (
+            <div key={i} className="mt-3">
+              <div className="flex flex-col ">
+                <div>
+                  <b>Услуга:</b> {appointment.service.title}
+                </div>
+                <div>
+                  <b>Клиент:</b> {appointment.user.username}
+                </div>
+                <div>
+                  <b>Статус:</b> {appointment.status}
+                </div>
+                <div className="flex flex-col gap-1">
+                  <DeleteAppointment
+                    serviceId={appointment.service.id}
+                    appointmentId={appointment.id}
                   />
                 </div>
               </div>

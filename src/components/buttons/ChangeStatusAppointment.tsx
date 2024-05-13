@@ -40,9 +40,9 @@ export default function TakeOrder({
     const params = new URLSearchParams(searchParams);
     if (appointmentId) {
       // -------------------
-      params.set("delAppoinemnt", appointmentId);
+      params.set("delAppointment", appointmentId);
     } else {
-      params.delete("delAppoinemnt");
+      params.delete("delAppointment");
     }
     replace(`${pathname}?${params.toString()}`);
     // Сбросить выбранную дату после отправки

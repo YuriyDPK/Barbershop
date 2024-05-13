@@ -17,6 +17,7 @@ export default async function Service({
     reviewIdParam?: number;
     editAppoinemnt?: string;
     appoinemntIdParam?: number;
+    delAppointment?: number;
   };
 }) {
   const cookieStore = cookies();
@@ -36,7 +37,11 @@ export default async function Service({
       await db.review.delete({ where: { id } });
       redirect("/adminPanel");
     }
-
+    if (searchParams?.delAppointment) {
+      const id = parseInt(searchParams.delAppointment);
+      await db.appointment.delete({ where: { id } });
+      redirect("/adminPanel");
+    }
     // get appointment from database
     appointments = await db.appointment.findMany({
       include: { service: true, user: true },

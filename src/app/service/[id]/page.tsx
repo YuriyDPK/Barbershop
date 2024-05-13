@@ -5,6 +5,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import TakeReview from "@/components/TakeReview";
 import DeleteService from "@/components/DeleteService";
+import FormEditService from "@/components/adminPanel/FormEditService";
 
 export default async function Service({
   params,
@@ -83,6 +84,13 @@ export default async function Service({
   if (!service) return <div>Сервис не найден</div>;
   return (
     <div className="w-1/2 mx-auto">
+      <div className="w-full flex gap-5">
+        {role == "admin" ? (
+          <FormEditService serviceId={service.id} />
+        ):(
+          <div></div>
+        )}
+     
       <div className="p-2 rounded-lg border shadow max-w-[400px] w-full mx-auto mt-24">
         <div>Название: {service.title}</div>
         <div>Цена: {service.price}</div>
@@ -100,6 +108,8 @@ export default async function Service({
           <div></div>
         )}
       </div>
+      </div>
+      
       {email != null ? (
         <>
           <TakeOrder serviceId={params.id} />
