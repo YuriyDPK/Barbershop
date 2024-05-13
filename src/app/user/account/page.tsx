@@ -63,7 +63,7 @@ export default async function Account({
   }
 
   return (
-    <div className="w-1/2 mx-auto mt-6">
+    <div className="lg:w-1/2 mx-auto mt-6 p-8">
       <h1 className="text-center text-xl">Личный кабинет</h1>
       <SetDataUser />
 

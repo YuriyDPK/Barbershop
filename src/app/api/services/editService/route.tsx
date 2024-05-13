@@ -1,30 +1,33 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
-import { writeFile, mkdir, access } from 'fs/promises'; // Добавлен импорт access
-import path from 'path';
+import { NextRequest, NextResponse } from "next/server";
+import { PrismaClient } from "@prisma/client";
+import { writeFile, mkdir, access } from "fs/promises"; // Добавлен импорт access
+import path from "path";
 
 const prisma = new PrismaClient();
 
 export const POST = async (req: NextRequest, res: NextResponse) => {
   try {
     const formData = await req.formData();
-    
-    const file = formData.get('photo');
+
+    const file = formData.get("photo");
 
     if (!file) {
-      return NextResponse.json({ error: 'No files received.' }, { status: 400 });
+      return NextResponse.json(
+        { error: "No files received." },
+        { status: 400 }
+      );
     }
 
     const buffer = Buffer.from(await file.arrayBuffer());
-    const filename = file.name.replaceAll(' ', '_');
-    
-    const assetsDir = path.join(process.cwd(), 'public/assets');
+    const filename = file.name.replaceAll(" ", "_");
+
+    const assetsDir = path.join(process.cwd(), "public/assets");
 
     // Создаем директорию, если её нет
     try {
       await mkdir(assetsDir, { recursive: true });
     } catch (err) {
-      console.error('Error creating directory:', err);
+      console.error("Error creating directory:", err);
       throw err;
     }
 
@@ -51,7 +54,7 @@ export const POST = async (req: NextRequest, res: NextResponse) => {
     }
 
     if (formDataObject.price) {
-      updatedData.price = parseFloat(formDataObject.price.replace(',', '.'));
+      updatedData.price = parseFloat(formDataObject.price.replace(",", "."));
     }
 
     if (formDataObject.managerId) {
@@ -72,10 +75,19 @@ export const POST = async (req: NextRequest, res: NextResponse) => {
       },
       data: updatedData,
     });
-
-    return NextResponse.json({ message: 'Service successfully updated', service: updatedService }, { status: 200 });
+    return NextResponse.redirect(
+      `http://localhost:3000/service/${formDataObject.id}`,
+      { status: 307 }
+    );
+    return NextResponse.json(
+      { message: "Service successfully updated", service: updatedService },
+      { status: 200 }
+    );
   } catch (error) {
-    console.error('Error occurred:', error);
-    return NextResponse.json({ message: 'Ошибка при изменении услуги' }, { status: 501 });
+    console.error("Error occurred:", error);
+    return NextResponse.json(
+      { message: "Ошибка при изменении услуги" },
+      { status: 501 }
+    );
   }
 };

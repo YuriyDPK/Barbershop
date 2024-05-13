@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 
 type Props = {};
@@ -10,16 +11,16 @@ export default function Footer({}: Props) {
           {/* Иконки социальных сетей */}
           <div className="flex space-x-4">
             <a href="#" className="text-xl">
-              1
+              <img src="../../photos/tg.svg" alt="" />
             </a>
             <a href="#" className="text-xl">
-              2
+              <img src="../../photos/vk.svg" alt="" />
             </a>
             <a href="#" className="text-xl">
-              3
+              <img src="../../photos/whatsup.svg" alt="" />
             </a>
             <a href="#" className="text-xl">
-              4
+              <img src="../../photos/youtube.svg" alt="" />
             </a>
           </div>
 

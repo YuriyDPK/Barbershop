@@ -83,33 +83,35 @@ export default async function Service({
   const service = await db.service.findUnique({ where: { id: +params.id } });
   if (!service) return <div>Сервис не найден</div>;
   return (
-    <div className="w-1/2 mx-auto">
-      <div className="w-full flex gap-5">
+    <div className="lg:w-1/2 mx-auto p-8">
+      <div className="w-full flex  flex-col-reverse gap-5 ">
         {role == "admin" ? (
           <FormEditService serviceId={service.id} />
-        ):(
-          <div></div>
-        )}
-     
-      <div className="p-2 rounded-lg border shadow max-w-[400px] w-full mx-auto mt-24">
-        <div>Название: {service.title}</div>
-        <div>Цена: {service.price}</div>
-        <div>Описание: {service.description}</div>
-        <Image
-          src={"/assets/" + service.photo}
-          alt={""}
-          width={200}
-          height={200}
-          className="w-full object-cover rounded-lg"
-        />
-        {role == "admin" ? (
-          <DeleteService serviceId={service.id} />
         ) : (
           <div></div>
         )}
+
+        <div className="mb-10  border overflow-hidden rounded-lg bg-white shadow-1 duration-300 hover:shadow-3 dark:bg-dark-2 dark:shadow-card dark:hover:shadow-3 max-w-[500px] w-full mx-auto">
+          <img
+            src={"/assets/" + service.photo}
+            alt=""
+            className="w-full object-cover rounded-t-lg"
+          />
+          <div className="p-8 text-center sm:p-9 md:p-7 xl:p-9">
+            <h3 className="mb-4 block text-xl font-semibold text-dark hover:text-primary dark:text-black  sm:text-[22px] md:text-xl lg:text-[22px] xl:text-xl 2xl:text-[22px]">
+              Название: {service.title}
+            </h3>
+            <div className="mb-7 text-base leading-relaxed text-body-color dark:text-dark-6">
+              Цена: {service.price}
+            </div>
+            <div className="mb-7 text-base leading-relaxed text-body-color dark:text-dark-6">
+              Описание: {service.description}
+            </div>
+            {role === "admin" && <DeleteService serviceId={service.id} />}
+          </div>
+        </div>
       </div>
-      </div>
-      
+
       {email != null ? (
         <>
           <TakeOrder serviceId={params.id} />

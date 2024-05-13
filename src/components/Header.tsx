@@ -1,6 +1,7 @@
 import React from "react";
 import { cookies } from "next/headers"; // добавляем этот импорт
 import Link from "next/link";
+import BurgerMenu from "./BurgerMenu";
 const links = [
   {
     name: "Главная",
@@ -91,9 +92,7 @@ export function Header() {
           </div>
 
           {/* Иконка для мобильного меню (если необходимо) */}
-          <div className="lg:hidden">
-            <button>Меню</button>
-          </div>
+          <BurgerMenu role={isAdmin} isAuth={isAuth} />
         </div>
       </header>
     </div>

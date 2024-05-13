@@ -39,7 +39,7 @@ export default function Login() {
 
   return (
     <div className="min-h-screen flex justify-center items-center bg-gray-100">
-      <div className="bg-white p-8 rounded-lg shadow-lg w-1/3">
+      <div className="bg-white p-8 rounded-lg shadow-lg lg:w-1/3">
         <h2 className="text-2xl font-semibold mb-4 text-black text-center">
           Авторизация
         </h2>

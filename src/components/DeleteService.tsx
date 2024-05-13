@@ -12,7 +12,7 @@ export default function DeleteService({ serviceId }: { serviceId: string }) {
     <div className="flex mx-auto text-center justify-center">
       <button
         onClick={handleSubmitDel}
-        className="py-1 px-5 bg-red-300 rounded-sm mt-1"
+        className="py-1 px-5 bg-red-400 rounded-sm mt-1 text-white rounded-md"
       >
         Удалить услугу
       </button>
