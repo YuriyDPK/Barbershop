@@ -6,29 +6,37 @@ type Props = {};
 export default function Footer({}: Props) {
   return (
     <div>
-      <footer className="bg-gray-500 text-white py-4 flex flex-col max-h-24">
-        <div className="container mx-auto flex justify-between items-center px-4 lg:px-0">
+      <footer className="bg-gray-500 text-white py-4 flex flex-col">
+        <div className="container mx-auto flex flex-col lg:flex-row justify-between items-center px-4 lg:px-0">
+          {/* Контактная информация */}
+          <div className="text-sm mb-4 lg:mb-0 lg:mr-8">
+            <p className="mb-2">Address: 123 Street Name, City, Country</p>
+            <p className="mb-2">Email: example@example.com</p>
+            <p>Phone: +1234567890</p>
+          </div>
+
           {/* Иконки социальных сетей */}
           <div className="flex space-x-4">
             <a href="#" className="text-xl">
-              <img src="../../photos/tg.svg" alt="" />
+              <img src="../../photos/tg.svg" alt="Telegram" className="w-10" />
             </a>
             <a href="#" className="text-xl">
-              <img src="../../photos/vk.svg" alt="" />
+              <img src="../../photos/vk.svg" alt="VKontakte" className="w-10" />
             </a>
             <a href="#" className="text-xl">
-              <img src="../../photos/whatsup.svg" alt="" />
+              <img
+                src="../../photos/whatsup.svg"
+                alt="WhatsApp"
+                className="w-10"
+              />
             </a>
-            <a href="#" className="text-xl">
-              <img src="../../photos/youtube.svg" alt="" />
+            <a href="#" className="text-xl w-10">
+              <img
+                src="../../photos/youtube.svg"
+                alt="YouTube"
+                className="w-10"
+              />
             </a>
-          </div>
-
-          {/* Контактная информация */}
-          <div className="text-sm">
-            <p>Address: 123 Street Name, City, Country</p>
-            <p>Email: example@example.com</p>
-            <p>Phone: +1234567890</p>
           </div>
         </div>
       </footer>

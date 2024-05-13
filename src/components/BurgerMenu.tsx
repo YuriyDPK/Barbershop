@@ -13,7 +13,7 @@ export default function BurgerMenu({
     stateMenu == "block" ? setStateMenu("hidden") : setStateMenu("block");
   }
   return (
-    <div>
+    <div className="lg:hidden">
       <div className="lg:hidden flex flex-col gap-1" onClick={handlerClick}>
         {/* <button>Меню</button> */}
         <span className="w-5 h-0.5 bg-white"></span>

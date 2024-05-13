@@ -105,7 +105,7 @@ export default async function Service({
           <>
             <Link
               href={`?page=${page - 1}`}
-              className="flex items-center justify-center px-4 h-10 ms-0 leading-tight text-gray-500 bg-white border border-e-0 border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+              className="flex items-center justify-center px-4 h-10 ms-0  text-black bg-white rounded-lg hover:bg-gray-100  dark:bg-blue-300 dark:text-black dark:hover:bg-blue-400 dark:hover:text-white"
             >
               {" "}
               <span className="sr-only">Previous</span>
@@ -127,7 +127,7 @@ export default async function Service({
             </Link>
           </>
         )}
-        <div className=" flex items-center justify-center px-4 h-10 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
+        <div className="flex items-center justify-center px-4 h-10 ms-0  text-black bg-white rounded-lg hover:bg-gray-100  dark:bg-blue-300 dark:text-black dark:hover:bg-blue-400 dark:hover:text-white">
           {page}
         </div>
         {/* Проверка на наличие следующей страницы */}
@@ -135,7 +135,7 @@ export default async function Service({
           <>
             <Link
               href={`?page=${page + 1}`}
-              className="flex items-center justify-center px-4 h-10 ms-0 leading-tight text-gray-500 bg-white border border-e-0 border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+              className="flex items-center justify-center px-4 h-10 ms-0 leading-tight text-black bg-blue-300 rounded-lg hover:bg-blue-400 hover:text-black dark:bg-blue-100 dark:text-gray-800 dark:hover:bg-blue-400 dark:hover:text-white"
             >
               <span className="sr-only">Next</span>
               <svg
