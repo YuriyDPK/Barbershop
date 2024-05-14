@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import EditReview from "@/components/buttons/EditReview";
 import DeleteAppointment from "@/components/buttons/DeleteAppointment";
+import { revalidatePath } from "next/cache";
 
 export default async function Account({
   searchParams,

@@ -5,13 +5,15 @@ export default function BurgerMenu({
   role,
   isAuth,
 }: {
-  role: string;
-  isAuth: string;
+  role: { value: string } | undefined;
+  isAuth: boolean;
 }) {
   const [stateMenu, setStateMenu] = useState("hidden");
-  function handlerClick(event: MouseEvent) {
-    stateMenu == "block" ? setStateMenu("hidden") : setStateMenu("block");
+
+  function handlerClick() {
+    setStateMenu((state) => (state === "block" ? "hidden" : "block"));
   }
+
   return (
     <div className="lg:hidden">
       <div className="lg:hidden flex flex-col gap-1" onClick={handlerClick}>
@@ -50,7 +52,7 @@ export default function BurgerMenu({
             >
               Профиль
             </a>
-            {role.value == "admin" && (
+            {role && role.value === "admin" && (
               <>
                 <a
                   href="http://localhost:3000/adminPanel"

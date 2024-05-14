@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import { useSearchParams, usePathname, useRouter } from "next/navigation";
-
+import { revalidatePath } from "next/cache";
 export default function TakeOrder({
   serviceId,
   reviewId,
@@ -27,7 +27,7 @@ export default function TakeOrder({
         params.delete("reviewIdParam");
       }
       replace(`${pathname}?${params.toString()}`);
-
+      revalidatePath("/", "page");
       // Сбросить выбранную дату после отправки
       setReview("");
       // Сбросить ошибку, если была отображена
@@ -45,6 +45,7 @@ export default function TakeOrder({
       params.delete("delReview");
     }
     replace(`${pathname}?${params.toString()}`);
+    revalidatePath("/user/account", "page");
     // Сбросить выбранную дату после отправки
     setReview("");
     // Сбросить ошибку, если была отображена

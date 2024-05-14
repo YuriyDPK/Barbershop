@@ -91,7 +91,7 @@ export default async function Service({
           <div></div>
         )}
 
-        <div className="mb-10  border overflow-hidden rounded-lg bg-white shadow-1 duration-300 hover:shadow-3 dark:bg-dark-2 dark:shadow-card dark:hover:shadow-3 max-w-[500px] w-full mx-auto">
+        <div className="mb-10 border overflow-hidden rounded-lg bg-white shadow-1 duration-300 hover:shadow-3 dark:bg-dark-2 dark:shadow-card dark:hover:shadow-3 max-w-[500px] w-full mx-auto">
           <img
             src={"/assets/" + service.photo}
             alt=""
