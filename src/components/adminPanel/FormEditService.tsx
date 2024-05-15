@@ -1,10 +1,15 @@
 import React from "react";
 import { cookies } from "next/headers";
 import { db } from "@/shared/db";
-export default async function FormEditService({ serviceId }: { serviceId: number }) {
+export default async function FormEditService({
+  serviceId,
+}: {
+  serviceId: number;
+}) {
   const cookieStore = cookies();
   const role = cookieStore.get("role");
-  const email = cookieStore.get("email").value;
+  const email = cookieStore.get("email")?.value ?? "";
+
   // Find the user by email to get their ID
   const user = await db.user.findUnique({ where: { email } });
   const userId = user?.id;
@@ -15,7 +20,7 @@ export default async function FormEditService({ serviceId }: { serviceId: number
         className="space-y-3"
         method="POST"
         action="/api/services/editService"
-        enctype="multipart/form-data"
+        encType="multipart/form-data"
       >
         <input
           type="text"
@@ -23,7 +28,6 @@ export default async function FormEditService({ serviceId }: { serviceId: number
           name="title"
           className="w-full border border-gray-300 rounded-md px-3 py-2 text-black/80"
           placeholder="Название услуги"
-          
         />
         <input
           type="text"
@@ -47,7 +51,6 @@ export default async function FormEditService({ serviceId }: { serviceId: number
           name="description"
           className="w-full border border-gray-300 rounded-md px-3 py-2 text-black/80"
           placeholder="Описание"
-          
         />
         <input
           type="number"
@@ -55,7 +58,6 @@ export default async function FormEditService({ serviceId }: { serviceId: number
           name="price"
           className="w-full border border-gray-300 rounded-md px-3 py-2 text-black/80"
           placeholder="Стоимость"
-          
         />
         <input
           type="file"
@@ -63,7 +65,6 @@ export default async function FormEditService({ serviceId }: { serviceId: number
           name="photo"
           className="w-full border border-gray-300 rounded-md px-3 py-2 text-black/80"
           placeholder="Выберите файл"
-          
         />
         <button
           type="submit"

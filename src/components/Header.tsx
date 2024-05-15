@@ -1,5 +1,5 @@
 import React from "react";
-import { cookies } from "next/headers"; // добавляем этот импорт
+import { cookies } from "next/headers";
 import Link from "next/link";
 import BurgerMenu from "./BurgerMenu";
 const links = [
@@ -10,6 +10,10 @@ const links = [
   {
     name: "Услуги",
     url: "/service",
+  },
+  {
+    name: "Контакты",
+    url: "/contacts",
   },
 ];
 
@@ -27,13 +31,11 @@ export function Header() {
 
           {/* Блоки меню */}
           <nav className="hidden lg:flex space-x-4">
-            {links.map((link, i) => {
-              return (
-                <Link href={link.url} key={i} className="hover:text-gray-300">
-                  {link.name}
-                </Link>
-              );
-            })}
+            {links.map((link, i) => (
+              <Link href={link.url} key={i} className="hover:text-gray-300">
+                {link.name}
+              </Link>
+            ))}
           </nav>
 
           {/* Кнопки авторизации и регистрации */}
@@ -58,23 +60,20 @@ export function Header() {
           {isAuth && (
             <div className="hidden lg:flex space-x-4">
               <Link
-                href="http://localhost:3000/user/account"
+                href="/user/account"
                 className="px-4 py-2 bg-gray-800 text-white rounded hover:bg-gray-700"
               >
                 Профиль
               </Link>
               {isAdmin && isAdmin.value === "admin" && (
                 <Link
-                  href="http://localhost:3000/adminPanel"
+                  href="/adminPanel"
                   className="px-4 py-2 bg-yellow-700 text-white rounded hover:bg-yellow-800"
                 >
                   Админ-панель
                 </Link>
               )}
-              <form
-                action="http://localhost:3000/api/users/logout"
-                method="GET"
-              >
+              <form action="/api/users/logout" method="GET">
                 <button
                   className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
                   type="submit"
@@ -92,7 +91,10 @@ export function Header() {
           </div>
 
           {/* Иконка для мобильного меню (если необходимо) */}
-          <BurgerMenu role={isAdmin} isAuth={isAuth} />
+          <BurgerMenu
+            role={{ value: isAdmin ? isAdmin.value : "" }}
+            isAuth={!!isAuth}
+          />
         </div>
       </header>
     </div>

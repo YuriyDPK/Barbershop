@@ -25,6 +25,7 @@ export async function POST(request: NextRequest, response: NextResponse) {
     });
 
     cookies().set("email", `${email}`);
+    cookies().set("role", "user");
     // Отправляем ответ с токеном и куками
     return NextResponse.json({ message: "Вы зареганы" }, { status: 201 });
   } catch (error) {

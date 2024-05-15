@@ -46,6 +46,10 @@ export default async function Service({
       dateObject = new Date(isoString);
       // console.log(dateObject);
       // create an appoinment in prisma
+      // Проверка на undefined и обработка ошибки
+      if (userId === undefined) {
+        throw new Error("userId is undefined");
+      }
       const appointment = await db.appointment.create({
         data: {
           date: dateObject,
@@ -62,6 +66,10 @@ export default async function Service({
   let reviewParam = searchParams?.review ? String(searchParams?.review) : "";
   // create an review in prisma if review is not null
   if (reviewParam.length > 1) {
+    // Проверка на undefined и обработка ошибки
+    if (userId === undefined) {
+      throw new Error("userId is undefined");
+    }
     const review = await db.review.create({
       data: {
         content: reviewParam,
@@ -107,7 +115,9 @@ export default async function Service({
             <div className="mb-7 text-base leading-relaxed text-body-color dark:text-dark-6">
               Описание: {service.description}
             </div>
-            {role === "admin" && <DeleteService serviceId={service.id} />}
+            {role === "admin" && (
+              <DeleteService serviceId={service.id.toString()} />
+            )}
           </div>
         </div>
       </div>

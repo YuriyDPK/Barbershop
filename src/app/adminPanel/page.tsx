@@ -5,7 +5,7 @@ import FormAddService from "@/components/adminPanel/FormAddService";
 import DeleteReview from "@/components/buttons/DeleteReview";
 import ChangeStatusAppointment from "@/components/buttons/ChangeStatusAppointment";
 
-export default async function Service({ searchParams }) {
+export default async function Service() {
   const cookieStore = cookies();
   const email = cookieStore.get("email")?.value;
   const role = cookieStore.get("role")?.value;
@@ -50,8 +50,8 @@ export default async function Service({ searchParams }) {
                   </div>
                   <div className="flex flex-col gap-1">
                     <DeleteReview
-                      serviceId={review.service.id}
-                      reviewId={review.id}
+                      serviceId={review.service.id.toString()}
+                      reviewId={review.id.toString()}
                     />
                   </div>
                 </div>
@@ -91,8 +91,8 @@ export default async function Service({ searchParams }) {
                   </div>
                   <div className="flex flex-col gap-1">
                     <ChangeStatusAppointment
-                      serviceId={appointment.service.id}
-                      appointmentId={appointment.id}
+                      serviceId={appointment.service.id.toString()}
+                      appointmentId={appointment.id.toString()}
                     />
                   </div>
                 </div>

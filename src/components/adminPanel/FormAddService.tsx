@@ -4,7 +4,7 @@ import { db } from "@/shared/db";
 export default async function FormAddService() {
   const cookieStore = cookies();
   const role = cookieStore.get("role");
-  const email = cookieStore.get("email").value;
+  const email = cookieStore.get("email")?.value ?? "";
   // Find the user by email to get their ID
   const user = await db.user.findUnique({ where: { email } });
   const userId = user?.id;
@@ -14,7 +14,7 @@ export default async function FormAddService() {
         className="space-y-3"
         method="POST"
         action="/api/services/addService"
-        enctype="multipart/form-data"
+        encType="multipart/form-data"
       >
         <input
           type="text"

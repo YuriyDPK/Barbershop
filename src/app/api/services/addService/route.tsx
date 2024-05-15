@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
 import { writeFile, mkdir } from "fs/promises";
 import path from "path";
-import { redirect } from "next/navigation";
 
 const prisma = new PrismaClient();
 
@@ -12,14 +11,14 @@ export const POST = async (req: NextRequest, res: NextResponse) => {
 
     const file = formData.get("photo");
 
-    if (!file) {
+    if (!file || !(file instanceof File)) {
       return NextResponse.json(
-        { error: "No files received." },
+        { error: "No files received or file is invalid." },
         { status: 400 }
       );
     }
 
-    const buffer = await file.arrayBuffer(); // Change here
+    const buffer = await file.arrayBuffer();
     const filename = file.name.replaceAll(" ", "_");
 
     const assetsDir = path.join(process.cwd(), "public/assets");
@@ -30,15 +29,30 @@ export const POST = async (req: NextRequest, res: NextResponse) => {
       throw err;
     }
 
-    await writeFile(
-      path.join(assetsDir, filename),
-      Buffer.from(buffer) // Change here
-    );
+    await writeFile(path.join(assetsDir, filename), Buffer.from(buffer));
 
-    const formDataObject = Object.fromEntries([...formData.entries()]);
-    const { title, description } = formDataObject;
-    const price = parseFloat(formDataObject.price.replace(",", "."));
-    const managerId = parseInt(formDataObject.managerId);
+    const formDataObject = Object.fromEntries(formData.entries());
+    const {
+      title,
+      description,
+      price: priceString,
+      managerId: managerIdString,
+    } = formDataObject;
+
+    if (
+      typeof title !== "string" ||
+      typeof description !== "string" ||
+      typeof priceString !== "string" ||
+      typeof managerIdString !== "string"
+    ) {
+      return NextResponse.json(
+        { error: "Invalid form data." },
+        { status: 400 }
+      );
+    }
+
+    const price = parseFloat(priceString.replace(",", "."));
+    const managerId = parseInt(managerIdString, 10);
 
     const newService = await prisma.service.create({
       data: {
@@ -57,10 +71,6 @@ export const POST = async (req: NextRequest, res: NextResponse) => {
         Location: redirectUrl,
       },
     });
-    return NextResponse.json(
-      { message: "Услуга успешно добавлена", service: newService },
-      { status: 201 }
-    );
   } catch (error) {
     console.error("Error occurred:", error);
     return NextResponse.json(

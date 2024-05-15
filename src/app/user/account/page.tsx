@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 import EditReview from "@/components/buttons/EditReview";
 import DeleteAppointment from "@/components/buttons/DeleteAppointment";
 
-export default async function Account({ searchParams }) {
+export default async function Account() {
   const cookieStore = cookies();
   const email = cookieStore.get("email")?.value;
   const user = await db.user.findUnique({ where: { email } });
@@ -46,8 +46,8 @@ export default async function Account({ searchParams }) {
                   </div>
                   <div className="flex flex-col gap-1">
                     <EditReview
-                      serviceId={review.service.id}
-                      reviewId={review.id}
+                      serviceId={review.service.id.toString()}
+                      reviewId={review.id.toString()}
                     />
                   </div>
                 </div>
@@ -79,8 +79,8 @@ export default async function Account({ searchParams }) {
                   </div>
                   <div className="flex flex-col gap-1">
                     <DeleteAppointment
-                      serviceId={appointment.service.id}
-                      appointmentId={appointment.id}
+                      serviceId={appointment.service.id.toString()}
+                      appointmentId={appointment.id.toString()}
                     />
                   </div>
                 </div>
