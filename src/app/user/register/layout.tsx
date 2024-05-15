@@ -19,6 +19,7 @@ export default function RootLayout({
     username: "",
     email: "",
     password: "",
+    phone: "",
   });
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -65,6 +66,16 @@ export default function RootLayout({
             onChange={handleChange}
             className="w-full border border-gray-300 rounded-md px-3 py-2 text-black/80"
             placeholder="Введите ваше имя пользователя"
+            required
+          />
+          <input
+            type="phone"
+            id="phone"
+            name="phone"
+            value={formData.phone}
+            onChange={handleChange}
+            className="w-full border border-gray-300 rounded-md px-3 py-2 text-black/80"
+            placeholder="Введите ваше телефон"
             required
           />
           <input

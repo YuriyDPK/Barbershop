@@ -1,8 +1,8 @@
 "use client";
 import React, { useState } from "react";
-import { useSearchParams, usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 
-export default function TakeOrder({
+export default function ChangeStatusAppointment({
   serviceId,
   appointmentId,
 }: {
@@ -12,51 +12,57 @@ export default function TakeOrder({
   const router = useRouter();
   const [appointment, setAppointment] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
-  const searchParams = useSearchParams();
-  const pathname = usePathname();
-  const { replace } = useRouter();
-  const handleSubmit = () => {
-    if (appointment.trim() !== "") {
-      const params = new URLSearchParams(searchParams);
-      if (appointment) {
-        // -------------------
-        params.set("editAppoinemnt", appointment);
-        params.set("appoinemntIdParam", appointmentId);
-      } else {
-        params.delete("editAppoinemnt");
-        params.delete("appoinemntIdParam");
-      }
-      replace(`${pathname}?${params.toString()}`);
 
-      // Сбросить выбранную дату после отправки
+  const handleSubmit = async () => {
+    if (appointment.trim() !== "") {
+      try {
+        const response = await fetch(`/api/admin/appointment/edit`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ appointmentId, status: appointment }),
+        });
+        if (!response.ok) {
+          throw new Error("Failed to update appointment");
+        }
+        setAppointment("");
+        setError(null);
+        router.refresh(); // Обновить текущую страницу
+      } catch (error) {
+        setError("Ошибка при редактировании заявки");
+      }
+    } else {
+      setError("Введите статус заявки");
+    }
+  };
+
+  const handleSubmitDel = async () => {
+    try {
+      const response = await fetch(`/api/admin/appointment/delete`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ appointmentId }),
+      });
+      if (!response.ok) {
+        throw new Error("Failed to delete appointment");
+      }
       setAppointment("");
-      // Сбросить ошибку, если была отображена
       setError(null);
-    } else {
-      setError("Введите отзыв");
+      router.refresh(); // Обновить текущую страницу
+    } catch (error) {
+      setError("Ошибка при удалении заявки");
     }
   };
-  const handleSubmitDel = () => {
-    const params = new URLSearchParams(searchParams);
-    if (appointmentId) {
-      // -------------------
-      params.set("delAppointment", appointmentId);
-    } else {
-      params.delete("delAppointment");
-    }
-    replace(`${pathname}?${params.toString()}`);
-    // Сбросить выбранную дату после отправки
-    setAppointment("");
-    // Сбросить ошибку, если была отображена
-    setError(null);
-  };
+
   return (
     <div className="mt-1 flex flex-col">
       <h2 className="text-xl font-semibold">Статус заявки:</h2>
-
       <select
-        name="appoinment"
-        id="appoinment"
+        name="appointment"
+        id="appointment"
         onChange={(e) => setAppointment(e.target.value)}
         className="text-lg border p-1"
       >
@@ -64,7 +70,6 @@ export default function TakeOrder({
         <option value="отклонено">отклонено</option>
         <option value="одобрено">одобрено</option>
       </select>
-      {/* Скрытое поле с serviceId */}
       <input type="hidden" name="serviceId" value={serviceId} />
       {error && <p className="text-red-500 mt-2">{error}</p>}
       <button

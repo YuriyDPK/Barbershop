@@ -31,6 +31,7 @@ model User {
   email        String        @unique
   password     String
   role         String        // 'user' or 'manager'
+  phone        String        @unique
   reviews      Review[]
   appointments Appointment[]
   // Обратное отношение к услугам, которые добавлены этим пользователем

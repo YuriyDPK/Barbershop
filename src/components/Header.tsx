@@ -20,7 +20,7 @@ export function Header() {
 
   return (
     <div>
-      <header className="bg-gray-600 text-white py-4">
+      <header className="bg-gray-600 text-white py-4 px-4">
         <div className="container mx-auto flex justify-between items-center px-4 lg:px-0">
           {/* Логотип или название сайта */}
           <div className="text-xl font-bold">TOPBEARD</div>

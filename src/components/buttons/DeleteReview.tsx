@@ -1,8 +1,8 @@
 "use client";
 import React, { useState } from "react";
-import { useSearchParams, usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 
-export default function TakeOrder({
+export default function DeleteReview({
   serviceId,
   reviewId,
 }: {
@@ -10,30 +10,31 @@ export default function TakeOrder({
   reviewId: string;
 }) {
   const router = useRouter();
-  const [review, setReview] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
-  const searchParams = useSearchParams();
-  const pathname = usePathname();
-  const { replace } = useRouter();
 
-  const handleSubmitDel = () => {
-    const params = new URLSearchParams(searchParams);
-    if (reviewId) {
-      // -------------------
-      params.set("delReview", reviewId);
-    } else {
-      params.delete("delReview");
+  const handleSubmitDel = async () => {
+    try {
+      const response = await fetch(`/api/admin/review/delete`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ reviewId }),
+      });
+      if (!response.ok) {
+        throw new Error("Failed to delete review");
+      }
+      setError(null);
+      router.refresh(); // Обновить текущую страницу
+    } catch (error) {
+      setError("Ошибка при удалении отзыва");
     }
-    replace(`${pathname}?${params.toString()}`);
-    // Сбросить выбранную дату после отправки
-    setReview("");
-    // Сбросить ошибку, если была отображена
-    setError(null);
   };
+
   return (
     <div className="mt-1 flex flex-col">
       <h2 className="text-xl font-semibold">Удалить отзыв:</h2>
-
+      {error && <p className="text-red-500 mt-2">{error}</p>}
       <button
         onClick={handleSubmitDel}
         className="py-1 px-5 bg-red-300 rounded-sm mt-1"

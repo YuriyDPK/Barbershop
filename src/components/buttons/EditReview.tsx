@@ -1,8 +1,8 @@
 "use client";
 import React, { useState } from "react";
-import { useSearchParams, usePathname, useRouter } from "next/navigation";
-import { revalidatePath } from "next/cache";
-export default function TakeOrder({
+import { useRouter } from "next/navigation";
+
+export default function EditReview({
   serviceId,
   reviewId,
 }: {
@@ -10,47 +10,53 @@ export default function TakeOrder({
   reviewId: string;
 }) {
   const router = useRouter();
-  const [review, setReview] = useState<string>("");
+  const [review, setReview] = useState("");
   const [error, setError] = useState<string | null>(null);
-  const searchParams = useSearchParams();
-  const pathname = usePathname();
-  const { replace } = useRouter();
-  const handleSubmit = () => {
+
+  const handleSubmit = async () => {
     if (review.trim() !== "") {
-      const params = new URLSearchParams(searchParams);
-      if (review) {
-        // -------------------
-        params.set("editReview", review);
-        params.set("reviewIdParam", reviewId);
-      } else {
-        params.delete("editReview");
-        params.delete("reviewIdParam");
+      try {
+        const response = await fetch(`/api/review/edit`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ reviewId, content: review }),
+        });
+        if (!response.ok) {
+          throw new Error("Failed to edit review");
+        }
+        setReview("");
+        setError(null);
+        router.refresh(); // Обновить текущую страницу
+      } catch (error) {
+        setError("Ошибка при редактировании отзыва");
       }
-      replace(`${pathname}?${params.toString()}`);
-      revalidatePath("/", "page");
-      // Сбросить выбранную дату после отправки
-      setReview("");
-      // Сбросить ошибку, если была отображена
-      setError(null);
     } else {
       setError("Введите отзыв");
     }
   };
-  const handleSubmitDel = () => {
-    const params = new URLSearchParams(searchParams);
-    if (reviewId) {
-      // -------------------
-      params.set("delReview", reviewId);
-    } else {
-      params.delete("delReview");
+
+  const handleSubmitDel = async () => {
+    try {
+      const response = await fetch(`/api/review/delete`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ reviewId }),
+      });
+      if (!response.ok) {
+        throw new Error("Failed to delete review");
+      }
+      setReview("");
+      setError(null);
+      router.refresh(); // Обновить текущую страницу
+    } catch (error) {
+      setError("Ошибка при удалении отзыва");
     }
-    replace(`${pathname}?${params.toString()}`);
-    revalidatePath("/user/account", "page");
-    // Сбросить выбранную дату после отправки
-    setReview("");
-    // Сбросить ошибку, если была отображена
-    setError(null);
   };
+
   return (
     <div className="mt-1 flex flex-col">
       <h2 className="text-xl font-semibold">Редактировать отзыв:</h2>
@@ -60,7 +66,6 @@ export default function TakeOrder({
         className="w-full p-2 border rounded mt-2"
         placeholder="Введите ваш отзыв"
       />
-      {/* Скрытое поле с serviceId */}
       <input type="hidden" name="serviceId" value={serviceId} />
       {error && <p className="text-red-500 mt-2">{error}</p>}
       <button

@@ -9,6 +9,7 @@ export default function SetDataUser({}: Props) {
   const [userName, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
   const [updated, setUpdated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isPending, setIsPending] = useState(false);
@@ -40,6 +41,7 @@ export default function SetDataUser({}: Props) {
           username: userName,
           email: email,
           password: password,
+          phone: phone,
         }),
       });
       alert("Данные изменены");
@@ -68,18 +70,28 @@ export default function SetDataUser({}: Props) {
           value={userName}
           onChange={(e) => setUsername(e.target.value)}
           className="border px-3 py-2 rounded-lg"
+          placeholder="Ваше имя"
         />
         <input
           type="text"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           className="border px-3 py-2 rounded-lg"
+          placeholder="Ваш email"
+        />
+        <input
+          type="text"
+          value={phone}
+          onChange={(e) => setPhone(e.target.value)}
+          className="border px-3 py-2 rounded-lg"
+          placeholder="Ваш телефон"
         />
         <input
           type="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           className="border px-3 py-2 rounded-lg"
+          placeholder="Ваш пароль"
         />
         <button
           className="bg-blue-500 h-12 rounded-lg text-white font-semibold disabled:opacity-50"

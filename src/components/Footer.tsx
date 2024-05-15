@@ -6,7 +6,7 @@ type Props = {};
 export default function Footer({}: Props) {
   return (
     <div>
-      <footer className="bg-gray-500 text-white py-4 flex flex-col">
+      <footer className="bg-gray-500 text-white py-4 flex flex-col px-4">
         <div className="container mx-auto flex flex-col lg:flex-row justify-between items-center px-4 lg:px-0">
           {/* Контактная информация */}
           <div className="text-sm mb-4 lg:mb-0 lg:mr-8">
