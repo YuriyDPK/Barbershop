@@ -1,6 +1,5 @@
 import TakeOrder from "@/components/TakeOrder";
 import { db } from "@/shared/db";
-import Image from "next/image";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import TakeReview from "@/components/TakeReview";
@@ -14,41 +13,28 @@ export default async function Service({
   params: { id: string };
   searchParams: { date: string; review: string };
 }) {
-  // Get user data from cookies
   const cookieStore = cookies();
   const role = cookieStore.get("role")?.value;
   const email = cookieStore.get("email")?.value;
   let user, userId;
   if (email != null) {
-    // Find the user by email to get their ID
     user = await db.user.findUnique({ where: { email } });
     userId = user?.id;
   }
 
-  // Work with the date
   let date = searchParams?.date ? String(searchParams?.date) : "";
   let dateObject = null;
-  if (date != null) {
-    // Check for the presence of "T" in the string
-    const splitChar = date.includes("T") ? "T" : " ";
+  if (date) {
+    const [datePart, timePart] = date.split("T");
 
-    // Split the string by "T" or space
-    const [datePart, timePart] = date.split(splitChar);
-
-    // If datePart and timePart exist, replace dots with dashes and convert the string to ISO format
     if (datePart && timePart) {
-      const isoString = `${datePart.replace(/\./g, "-")}T${timePart.replace(
-        /\./g,
-        ":"
-      )}`;
-      // Convert the string to a date object
+      const isoString = `${datePart}T${timePart.replace(/\./g, ":")}`;
       dateObject = new Date(isoString);
 
-      // Create an appointment in Prisma
       if (userId === undefined) {
         throw new Error("userId is undefined");
       }
-      const appointment = await db.appointment.create({
+      await db.appointment.create({
         data: {
           date: dateObject,
           userId,
@@ -56,19 +42,16 @@ export default async function Service({
           status: "ожидание",
         },
       });
-      // Redirect to account
       redirect("../user/account");
     }
   }
 
-  // Get a review from params
   let reviewParam = searchParams?.review ? String(searchParams?.review) : "";
   if (reviewParam.length > 1) {
     if (userId === undefined) {
       throw new Error("userId is undefined");
     }
 
-    // Check if the user has an appointment for the service
     const hasAppointment = await db.appointment.findFirst({
       where: {
         userId,
@@ -80,7 +63,7 @@ export default async function Service({
       throw new Error("You must have an appointment to leave a review");
     }
 
-    const review = await db.review.create({
+    await db.review.create({
       data: {
         content: reviewParam,
         userId,
@@ -91,7 +74,6 @@ export default async function Service({
     redirect("/service");
   }
 
-  // Get all reviews with related user information
   const reviews = await db.review.findMany({
     where: { serviceId: +params.id },
     include: { user: true },
@@ -100,7 +82,6 @@ export default async function Service({
   const service = await db.service.findUnique({ where: { id: +params.id } });
   if (!service) return <div>Сервис не найден</div>;
 
-  // Check if the user has an appointment for the service
   const hasAppointment = userId
     ? await db.appointment.findFirst({
         where: {
@@ -109,6 +90,14 @@ export default async function Service({
         },
       })
     : null;
+
+  const appointments = await db.appointment.findMany({
+    where: { serviceId: +params.id },
+    select: { date: true },
+  });
+  const bookedDates = appointments.map((appointment) =>
+    appointment.date.toISOString()
+  );
 
   return (
     <div className="lg:w-1/2 mx-auto p-8">
@@ -144,7 +133,7 @@ export default async function Service({
 
       {email != null ? (
         <>
-          <TakeOrder serviceId={params.id} />
+          <TakeOrder serviceId={params.id} bookedDates={bookedDates} />
           <TakeReview serviceId={params.id} canReview={!!hasAppointment} />
         </>
       ) : (

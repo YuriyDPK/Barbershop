@@ -48,7 +48,7 @@ export default async function Service({
         {
           <Link
             href={`?page=${page}&sortBy=price`}
-            className="bg-blue-100 p-1 rounded-md"
+            className="bg-blue-100 hover:bg-blue-200 p-2 rounded-md"
           >
             цене
           </Link>
@@ -56,7 +56,7 @@ export default async function Service({
         {
           <Link
             href={`?page=${page}&sortBy=title`}
-            className="bg-blue-100 p-1 rounded-md"
+            className="bg-blue-100 hover:bg-blue-200 p-2 rounded-md"
           >
             названию
           </Link>
@@ -88,7 +88,7 @@ export default async function Service({
                   </div>
                   <a
                     href={`/service/${service.id}`}
-                    className="inline-block rounded-full border border-gray-3 px-7 py-2 text-base font-medium text-body-color transition hover:border-primary hover:bg-primary hover:text-black dark:border-dark-3 dark:text-dark-6"
+                    className="inline-block rounded-lg border px-7 py-2 text-base font-medium text-body-color transition hover:border-primary bg-gray-200 hover:bg-gray-300 hover:text-black dark:border-dark-3 dark:text-dark-6"
                   >
                     Подробнее
                   </a>
@@ -127,7 +127,7 @@ export default async function Service({
             </Link>
           </>
         )}
-        <div className="flex items-center justify-center px-4 h-10 ms-0  text-black bg-white rounded-lg hover:bg-gray-100  dark:bg-blue-300 dark:text-black dark:hover:bg-blue-400 dark:hover:text-white">
+        <div className="flex items-center justify-center px-4 h-10 ms-0 text-black bg-blue-200 rounded-lg hover:bg-blue-300  dark:bg-blue-300 dark:text-black dark:hover:bg-blue-400 dark:hover:text-white">
           {page}
         </div>
         {/* Проверка на наличие следующей страницы */}

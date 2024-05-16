@@ -16,23 +16,28 @@ export default function DeleteAppointment({
   const pathname = usePathname();
   const { replace } = useRouter();
 
-  const handleSubmitDel = () => {
-    const params = new URLSearchParams(searchParams);
-    if (appointmentId) {
-      // -------------------
-      params.set("delAppointment", appointmentId);
-    } else {
-      params.delete("delAppointment");
+  const handleSubmitDel = async () => {
+    try {
+      const response = await fetch(`/api/admin/appointment/delete`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ appointmentId }),
+      });
+      if (!response.ok) {
+        throw new Error("Failed to delete appointment");
+      }
+      setAppointment("");
+      setError(null);
+      router.refresh(); // Обновить текущую страницу
+    } catch (error) {
+      setError("Ошибка при удалении заявки");
     }
-    replace(`${pathname}?${params.toString()}`);
-    // Сбросить выбранную дату после отправки
-    setAppointment("");
-    // Сбросить ошибку, если была отображена
-    setError(null);
   };
   return (
     <div className="mt-1 flex flex-col">
-      <h2 className="text-xl font-semibold">Удалить отзыв:</h2>
+      <h2 className="text-xl font-semibold">Удалить заявку:</h2>
 
       <button
         onClick={handleSubmitDel}
