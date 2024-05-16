@@ -64,7 +64,7 @@ export const POST = async (req: NextRequest, res: NextResponse) => {
       },
     });
 
-    const redirectUrl = "/"; // Адрес главной страницы
+    const redirectUrl = "/service"; // Адрес главной страницы
     return new Response(null, {
       status: 303,
       headers: {

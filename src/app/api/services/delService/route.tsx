@@ -8,7 +8,7 @@ const prisma = new PrismaClient();
 
 export const DELETE = async (req: NextRequest, res: NextResponse) => {
   try {
-    // get id service from params
+    // Get service ID from query parameters
     const params = new URLSearchParams(req.nextUrl.search);
     const idParam = params.get("id");
     if (!idParam) {
@@ -22,28 +22,10 @@ export const DELETE = async (req: NextRequest, res: NextResponse) => {
       );
     }
 
-    // Удаляем все ожидающие заявки, связанные с удаленной услугой
-    const deletedAppointments = prisma.appointment.deleteMany({
-      where: { serviceId: id },
-    });
-
-    // Удаляем все отзывы, связанные с удаленной услугой
-    const deletedReviews = prisma.review.deleteMany({
-      where: { serviceId: id },
-    });
-
-    // Удаляем саму услугу
-    const deletedService = prisma.service.delete({
+    // Get the service to be deleted
+    const service = await prisma.service.findUnique({
       where: { id },
     });
-
-    const transactionResults = await prisma.$transaction([
-      deletedAppointments,
-      deletedReviews,
-      deletedService,
-    ]);
-
-    const [appointments, reviews, service] = transactionResults;
 
     if (!service) {
       return NextResponse.json(
@@ -54,18 +36,42 @@ export const DELETE = async (req: NextRequest, res: NextResponse) => {
 
     const filename = service.photo;
 
-    // Удалить файл изображения
-    const filePath = path.join(process.cwd(), "public/assets", filename);
-    try {
-      await unlink(filePath);
-    } catch (err) {
-      console.error("Error deleting file:", err);
-      throw err;
+    // Delete related appointments and reviews
+    const deletedAppointments = prisma.appointment.deleteMany({
+      where: { serviceId: id },
+    });
+    const deletedReviews = prisma.review.deleteMany({
+      where: { serviceId: id },
+    });
+    const deletedService = prisma.service.delete({
+      where: { id },
+    });
+
+    // Execute the deletions in a transaction
+    const transactionResults = await prisma.$transaction([
+      deletedAppointments,
+      deletedReviews,
+      deletedService,
+    ]);
+
+    // Check if other services still use the same photo
+    const otherServicesWithSamePhoto = await prisma.service.findMany({
+      where: { photo: filename },
+    });
+
+    // If no other services use the same photo, delete the photo file
+    if (otherServicesWithSamePhoto.length === 0) {
+      const filePath = path.join(process.cwd(), "public/assets", filename);
+      try {
+        await unlink(filePath);
+      } catch (err) {
+        console.error("Error deleting file:", err);
+        // Handle the error but proceed with the response
+      }
     }
 
-    // Call revalidatePath to revalidate the necessary path
-    // Assuming revalidatePath is available and properly imported
-    await revalidatePath("/src/app/service"); // Change to the correct path you need to revalidate
+    // Revalidate the necessary path
+    await revalidatePath("/service"); // Adjust the path as needed
 
     return NextResponse.json(
       { message: "Service successfully deleted", service },

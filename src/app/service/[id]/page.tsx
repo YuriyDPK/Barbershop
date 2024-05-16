@@ -14,7 +14,7 @@ export default async function Service({
   params: { id: string };
   searchParams: { date: string; review: string };
 }) {
-  // получаем data пользователя
+  // Get user data from cookies
   const cookieStore = cookies();
   const role = cookieStore.get("role")?.value;
   const email = cookieStore.get("email")?.value;
@@ -25,28 +25,26 @@ export default async function Service({
     userId = user?.id;
   }
 
-  //работа с датой
+  // Work with the date
   let date = searchParams?.date ? String(searchParams?.date) : "";
   let dateObject = null;
   if (date != null) {
-    // console.log(date);
-    // Проверяем наличие символа "T" в строке
+    // Check for the presence of "T" in the string
     const splitChar = date.includes("T") ? "T" : " ";
 
-    // Разбиваем строку по символу "T" или пробелу
+    // Split the string by "T" or space
     const [datePart, timePart] = date.split(splitChar);
 
-    // Если datePart и timePart существуют, заменяем точки на дефисы и преобразуем строку в формат ISO
+    // If datePart and timePart exist, replace dots with dashes and convert the string to ISO format
     if (datePart && timePart) {
       const isoString = `${datePart.replace(/\./g, "-")}T${timePart.replace(
         /\./g,
         ":"
       )}`;
-      // Преобразуем строку в объект даты
+      // Convert the string to a date object
       dateObject = new Date(isoString);
-      // console.log(dateObject);
-      // create an appoinment in prisma
-      // Проверка на undefined и обработка ошибки
+
+      // Create an appointment in Prisma
       if (userId === undefined) {
         throw new Error("userId is undefined");
       }
@@ -58,18 +56,30 @@ export default async function Service({
           status: "ожидание",
         },
       });
-      // redirect to account
+      // Redirect to account
       redirect("../user/account");
     }
   }
-  // get a review from params
+
+  // Get a review from params
   let reviewParam = searchParams?.review ? String(searchParams?.review) : "";
-  // create an review in prisma if review is not null
   if (reviewParam.length > 1) {
-    // Проверка на undefined и обработка ошибки
     if (userId === undefined) {
       throw new Error("userId is undefined");
     }
+
+    // Check if the user has an appointment for the service
+    const hasAppointment = await db.appointment.findFirst({
+      where: {
+        userId,
+        serviceId: +params.id,
+      },
+    });
+
+    if (!hasAppointment) {
+      throw new Error("You must have an appointment to leave a review");
+    }
+
     const review = await db.review.create({
       data: {
         content: reviewParam,
@@ -78,11 +88,10 @@ export default async function Service({
       },
     });
     reviewParam = "";
-    // redirect to account
     redirect("/service");
   }
 
-  // get all rewiews with relate table users that show who create this review
+  // Get all reviews with related user information
   const reviews = await db.review.findMany({
     where: { serviceId: +params.id },
     include: { user: true },
@@ -90,9 +99,20 @@ export default async function Service({
 
   const service = await db.service.findUnique({ where: { id: +params.id } });
   if (!service) return <div>Сервис не найден</div>;
+
+  // Check if the user has an appointment for the service
+  const hasAppointment = userId
+    ? await db.appointment.findFirst({
+        where: {
+          userId,
+          serviceId: +params.id,
+        },
+      })
+    : null;
+
   return (
     <div className="lg:w-1/2 mx-auto p-8">
-      <div className="w-full flex  flex-col-reverse gap-5 ">
+      <div className="w-full flex flex-col-reverse gap-5">
         {role == "admin" ? (
           <FormEditService serviceId={service.id} />
         ) : (
@@ -106,7 +126,7 @@ export default async function Service({
             className="w-full object-cover rounded-t-lg"
           />
           <div className="p-8 text-center sm:p-9 md:p-7 xl:p-9">
-            <h3 className="mb-4 block text-xl font-semibold text-dark hover:text-primary dark:text-black  sm:text-[22px] md:text-xl lg:text-[22px] xl:text-xl 2xl:text-[22px]">
+            <h3 className="mb-4 block text-xl font-semibold text-dark hover:text-primary dark:text-black sm:text-[22px] md:text-xl lg:text-[22px] xl:text-xl 2xl:text-[22px]">
               Название: {service.title}
             </h3>
             <div className="mb-7 text-base leading-relaxed text-body-color dark:text-dark-6">
@@ -125,30 +145,26 @@ export default async function Service({
       {email != null ? (
         <>
           <TakeOrder serviceId={params.id} />
-          <TakeReview serviceId={params.id} />
+          <TakeReview serviceId={params.id} canReview={!!hasAppointment} />
         </>
       ) : (
         <div></div>
       )}
 
-      {/* create block with tailwind for show all reviews and username who create this review */}
-      <div className="flex flex-col  mb-5  mt-5">
+      <div className="flex flex-col mb-5 mt-5">
         <h2 className="text-xl font-semibold">Отзывы:</h2>
-        {reviews.map((review, i) => {
-          return (
-            <div key={i} className="mt-3">
-              <div className="flex flex-col ">
-                <div>
-                  {" "}
-                  <b>Клиент:</b> {review.user.username}
-                </div>
-                <div>
-                  <b>Отзыв:</b> {review.content}
-                </div>
+        {reviews.map((review, i) => (
+          <div key={i} className="mt-3">
+            <div className="flex flex-col">
+              <div>
+                <b>Клиент:</b> {review.user.username}
+              </div>
+              <div>
+                <b>Отзыв:</b> {review.content}
               </div>
             </div>
-          );
-        })}
+          </div>
+        ))}
       </div>
     </div>
   );
