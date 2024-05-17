@@ -1,9 +1,9 @@
-import { db } from "@/shared/db";
 import Link from "next/link";
 import React from "react";
 import { cookies } from "next/headers";
 import SearchService from "@/components/SearchService";
 import ServiceCard from "@/components/ServiceCard";
+import prisma from "@/lib/prisma"; // Импорт Prisma из lib/prisma
 
 export default async function Service({
   searchParams,
@@ -15,7 +15,7 @@ export default async function Service({
   let name = searchParams?.name ? String(searchParams?.name) : "";
 
   const count = 4;
-  const totalServices = await db.service.count();
+  const totalServices = await prisma.service.count();
   const maxPage = Math.ceil(totalServices / count);
 
   // Проверка на страницу 0 и коррекция
@@ -28,7 +28,7 @@ export default async function Service({
     page = maxPage > 0 ? maxPage : 1;
   }
 
-  const services = await db.service.findMany({
+  const services = await prisma.service.findMany({
     skip: (page - 1) * count,
     take: count,
     orderBy: { [sortBy]: "asc" },

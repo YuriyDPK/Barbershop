@@ -2,7 +2,23 @@
 import React, { useState } from "react";
 import DeleteService from "@/components/DeleteService";
 
-export default function ServiceCardMore({ service, role }) {
+interface Service {
+  id: number;
+  title: string;
+  description: string;
+  price: number;
+  photo: string;
+}
+
+interface ServiceCardMoreProps {
+  service: Service;
+  role: string;
+}
+
+export default function ServiceCardMore({
+  service,
+  role,
+}: ServiceCardMoreProps) {
   const [showFullDescription, setShowFullDescription] = useState(false);
   const charLimit = 20;
 

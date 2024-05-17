@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import { db } from "@/shared/db";
+import prisma from "@/lib/prisma"; // Импорт Prisma из lib/prisma
 
 export async function POST(req: NextRequest) {
   try {
     const { appointmentId, status } = await req.json();
-    await db.appointment.update({
+    await prisma.appointment.update({
       where: { id: parseInt(appointmentId) },
       data: { status },
     });

@@ -1,9 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
+import prisma from "@/lib/prisma"; // Импорт Prisma из lib/prisma
 import { writeFile, mkdir, access } from "fs/promises";
 import path from "path";
-
-const prisma = new PrismaClient();
 
 const allowedMimeTypes = [
   "image/png",
@@ -12,8 +10,10 @@ const allowedMimeTypes = [
   "image/svg+xml",
 ];
 
-export const POST = async (req: NextRequest, res: NextResponse) => {
+export const POST = async (req: NextRequest) => {
   const baseUrl = req.nextUrl.origin;
+
+  let formDataObject: any = {};
 
   try {
     const formData = await req.formData();
@@ -53,32 +53,61 @@ export const POST = async (req: NextRequest, res: NextResponse) => {
       }
     }
 
-    const formDataObject = Object.fromEntries([...formData.entries()]);
+    formDataObject = Object.fromEntries(Array.from(formData.entries()));
     const updatedData: any = {}; // Создаем объект для хранения обновленных данных
 
     // Проверяем наличие данных и обновляем их
-    if (formDataObject.title) {
+    if (
+      typeof formDataObject.title === "string" &&
+      formDataObject.title.trim() !== ""
+    ) {
       updatedData.title = formDataObject.title;
     }
 
-    if (formDataObject.description) {
+    if (
+      typeof formDataObject.description === "string" &&
+      formDataObject.description.trim() !== ""
+    ) {
       updatedData.description = formDataObject.description;
     }
 
-    if (formDataObject.price) {
+    if (
+      typeof formDataObject.price === "string" &&
+      formDataObject.price.trim() !== ""
+    ) {
       updatedData.price = parseFloat(formDataObject.price.replace(",", "."));
     }
 
-    if (formDataObject.managerId) {
-      updatedData.managerId = parseInt(formDataObject.managerId);
+    if (
+      typeof formDataObject.managerId === "string" &&
+      formDataObject.managerId.trim() !== ""
+    ) {
+      updatedData.managerId = parseInt(formDataObject.managerId, 10);
     }
 
-    if (formDataObject.id) {
-      updatedData.id = parseInt(formDataObject.id);
+    if (
+      typeof formDataObject.id === "string" &&
+      formDataObject.id.trim() !== ""
+    ) {
+      updatedData.id = parseInt(formDataObject.id, 10);
+    } else {
+      return NextResponse.redirect(
+        `${baseUrl}/adminPanel?error=${encodeURIComponent(
+          "Отсутствует ID услуги."
+        )}`
+      );
     }
 
     if (filename) {
       updatedData.photo = filename;
+    }
+
+    if (Object.keys(updatedData).length === 0) {
+      return NextResponse.redirect(
+        `${baseUrl}/adminPanel?error=${encodeURIComponent(
+          "Нет данных для обновления."
+        )}`
+      );
     }
 
     const updatedService = await prisma.service.update({
@@ -88,14 +117,13 @@ export const POST = async (req: NextRequest, res: NextResponse) => {
       data: updatedData,
     });
 
-    return NextResponse.redirect(`${baseUrl}/service/${formDataObject.id}`, {
-      status: 307,
-    });
+    return NextResponse.redirect(`${baseUrl}/service/${updatedData.id}`);
   } catch (error) {
     console.error("Error occurred:", error);
-    return NextResponse.json(
-      { message: "Ошибка при изменении услуги" },
-      { status: 501 }
+    return NextResponse.redirect(
+      `${baseUrl}/service/${
+        typeof formDataObject.id === "string" ? formDataObject.id : ""
+      }?error=${encodeURIComponent("Ошибка при изменении услуги.")}`
     );
   }
 };

@@ -1,10 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
+import prisma from "@/lib/prisma"; // Импорт Prisma из lib/prisma
 import { unlink } from "fs/promises";
 import path from "path";
 import { revalidatePath } from "next/cache";
-
-const prisma = new PrismaClient();
 
 export const DELETE = async (req: NextRequest, res: NextResponse) => {
   try {

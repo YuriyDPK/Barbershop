@@ -1,6 +1,6 @@
 import React from "react";
 import { useUser } from "@/hooks/useUser";
-import ClientFormAddService from "./clientFormAddService";
+import ClientFormAddService from "./ClientFormAddService";
 
 export default async function FormAddService() {
   const { userId } = await useUser();

@@ -4,6 +4,7 @@ import React, { useState } from "react";
 
 interface ClientFormAddServiceProps {
   userId: string | null;
+  serviceId: string | null;
 }
 
 const ClientFormEditService: React.FC<ClientFormAddServiceProps> = ({
@@ -15,11 +16,12 @@ const ClientFormEditService: React.FC<ClientFormAddServiceProps> = ({
   const toggleFormVisibility = () => {
     setIsFormVisible((prev) => !prev);
   };
+
   return (
     <div className="mt-4 flex justify-center flex-col">
       <button
         onClick={toggleFormVisibility}
-        className="bg-yellow-400 text-white py-2 px-4 rounded-md hover:bg-yellow-500 m-2"
+        className="bg-yellow-400 text-black py-2 px-4 rounded-md hover:bg-yellow-500 m-2"
       >
         {isFormVisible ? "Скрыть форму" : "Редактировать услугу"}
       </button>
@@ -37,22 +39,26 @@ const ClientFormEditService: React.FC<ClientFormAddServiceProps> = ({
             className="w-full border border-gray-300 rounded-md px-3 py-2 text-black/80"
             placeholder="Название услуги"
           />
-          <input
-            type="text"
-            id="managerId"
-            name="managerId"
-            className="w-full border border-gray-300 rounded-md px-3 py-2 text-black/80"
-            value={userId}
-            hidden
-          />
-          <input
-            type="text"
-            id="id"
-            name="id"
-            className="w-full border border-gray-300 rounded-md px-3 py-2 text-black/80"
-            value={serviceId}
-            hidden
-          />
+          {userId && (
+            <input
+              type="text"
+              id="managerId"
+              name="managerId"
+              className="w-full border border-gray-300 rounded-md px-3 py-2 text-black/80"
+              value={userId}
+              hidden
+            />
+          )}
+          {serviceId && (
+            <input
+              type="text"
+              id="id"
+              name="id"
+              className="w-full border border-gray-300 rounded-md px-3 py-2 text-black/80"
+              value={serviceId}
+              hidden
+            />
+          )}
           <input
             type="text"
             id="description"
@@ -76,7 +82,7 @@ const ClientFormEditService: React.FC<ClientFormAddServiceProps> = ({
           />
           <button
             type="submit"
-            className="w-full bg-yellow-500 text-black py-2 rounded-md hover:bg-blue-600"
+            className="w-full bg-green-400 text-black py-2 rounded-md hover:bg-green-500"
           >
             Изменить
           </button>

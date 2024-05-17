@@ -1,6 +1,6 @@
 import SetDataUser from "@/components/SetDataUser";
 import { cookies } from "next/headers";
-import { db } from "@/shared/db";
+import prisma from "@/lib/prisma"; // Импорт Prisma из lib/prisma
 import { redirect } from "next/navigation";
 import EditReview from "@/components/buttons/EditReview";
 import DeleteAppointment from "@/components/buttons/DeleteAppointment";
@@ -8,18 +8,18 @@ import DeleteAppointment from "@/components/buttons/DeleteAppointment";
 export default async function Account() {
   const cookieStore = cookies();
   const email = cookieStore.get("email")?.value;
-  const user = await db.user.findUnique({ where: { email } });
+  const user = await prisma.user.findUnique({ where: { email } });
 
   if (!user) {
     redirect("/login");
   }
 
-  const reviews = await db.review.findMany({
+  const reviews = await prisma.review.findMany({
     where: { userId: user.id },
     include: { service: true, user: true },
   });
 
-  const appointments = await db.appointment.findMany({
+  const appointments = await prisma.appointment.findMany({
     where: { userId: user.id },
     include: { service: true, user: true },
   });

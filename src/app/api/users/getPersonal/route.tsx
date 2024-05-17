@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
-const prisma = new PrismaClient();
+import prisma from "@/lib/prisma"; // Импорт Prisma из lib/prisma
 
 // To handle a GET request to /api
 export async function GET(request: NextRequest) {

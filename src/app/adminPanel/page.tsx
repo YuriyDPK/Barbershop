@@ -1,10 +1,10 @@
-import { db } from "@/shared/db";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import FormAddService from "@/components/adminPanel/FormAddService";
 import DeleteReview from "@/components/buttons/DeleteReview";
 import ChangeStatusAppointment from "@/components/buttons/ChangeStatusAppointment";
 import ChangeStatusReview from "@/components/buttons/ChangeStatusReview";
+import prisma from "@/lib/prisma"; // Импорт Prisma из lib/prisma
 
 export default async function Service() {
   const cookieStore = cookies();
@@ -14,16 +14,16 @@ export default async function Service() {
     redirect("/user/login");
   }
 
-  const user = await db.user.findUnique({ where: { email } });
+  const user = await prisma.user.findUnique({ where: { email } });
   if (!user) {
     redirect("/user/login");
   }
 
-  const reviews = await db.review.findMany({
+  const reviews = await prisma.review.findMany({
     include: { service: true, user: true },
   });
 
-  const appointments = await db.appointment.findMany({
+  const appointments = await prisma.appointment.findMany({
     include: { service: true, user: true },
   });
 

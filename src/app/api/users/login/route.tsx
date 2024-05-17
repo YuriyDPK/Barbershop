@@ -1,14 +1,12 @@
-import { NextRequest, NextResponse } from 'next/server';
-import bcrypt from 'bcryptjs';
-import { PrismaClient } from '@prisma/client';
-import { cookies } from 'next/headers';
+import { NextRequest, NextResponse } from "next/server";
+import bcrypt from "bcryptjs";
+import prisma from "@/lib/prisma"; // Импорт Prisma из lib/prisma
 
-const prisma = new PrismaClient();
+import { cookies } from "next/headers";
 
-export async function POST(request: NextRequest, response: NextResponse){
-
+export async function POST(request: NextRequest, response: NextResponse) {
   const body = await request.json();
-  
+
   const { email, password } = body;
 
   try {
@@ -21,7 +19,10 @@ export async function POST(request: NextRequest, response: NextResponse){
 
     if (!user) {
       // Если пользователь с таким email не найден, возвращаем ошибку
-      return NextResponse.json({ message: 'Пользователь с таким email не найден' }, { status: 404 });
+      return NextResponse.json(
+        { message: "Пользователь с таким email не найден" },
+        { status: 404 }
+      );
     }
 
     // Проверяем, соответствует ли введенный пароль хэшу пароля пользователя
@@ -29,25 +30,31 @@ export async function POST(request: NextRequest, response: NextResponse){
 
     if (!passwordMatch) {
       // Если пароль неверен, возвращаем ошибку
-      return NextResponse.json({ message: 'Неверный пароль' }, { status: 401 });
+      return NextResponse.json({ message: "Неверный пароль" }, { status: 401 });
     }
 
     // Успешная аутентификация
     // Устанавливаем email в куки
-    cookies().set('email', `${email}`);
+    cookies().set("email", `${email}`);
 
     // Если у пользователя роль "admin", также записываем ее в куки
-    if (user.role === 'admin') {
-      cookies().set('role', 'admin');
+    if (user.role === "admin") {
+      cookies().set("role", "admin");
     }
-    if (user.role === 'user') {
-      cookies().set('role', 'user');
+    if (user.role === "user") {
+      cookies().set("role", "user");
     }
 
     // Возвращаем сообщение об успешной аутентификации
-    return NextResponse.json({ message: 'Вы успешно вошли в систему' }, { status: 200 });
+    return NextResponse.json(
+      { message: "Вы успешно вошли в систему" },
+      { status: 200 }
+    );
   } catch (error) {
     console.error(error);
-    return NextResponse.json({ message: 'Ошибка при аутентификации' }, { status: 500 });
+    return NextResponse.json(
+      { message: "Ошибка при аутентификации" },
+      { status: 500 }
+    );
   }
 }

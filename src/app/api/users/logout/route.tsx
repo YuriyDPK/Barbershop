@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
-import { PrismaClient } from "@prisma/client";
-const prisma = new PrismaClient();
+import prisma from "@/lib/prisma"; // Импорт Prisma из lib/prisma
+
 import { redirect } from "next/navigation";
 
 // To handle a GET request to /api

@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import { db } from "@/shared/db";
+import prisma from "@/lib/prisma"; // Импорт Prisma из lib/prisma
 
 export async function POST(req: NextRequest) {
   try {
     const { reviewId, content } = await req.json();
-    await db.review.update({
+    await prisma.review.update({
       where: { id: parseInt(reviewId) },
       data: { content },
     });

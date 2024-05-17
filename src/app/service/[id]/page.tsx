@@ -1,5 +1,5 @@
 import TakeOrder from "@/components/TakeOrder";
-import { db } from "@/shared/db";
+import prisma from "@/lib/prisma"; // Импорт Prisma из lib/prisma
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import TakeReview from "@/components/TakeReview";
@@ -14,11 +14,11 @@ export default async function Service({
   searchParams: { date: string; review: string; status: string };
 }) {
   const cookieStore = cookies();
-  const role = cookieStore.get("role")?.value;
+  const role = cookieStore.get("role")?.value ?? "";
   const email = cookieStore.get("email")?.value;
   let user, userId;
   if (email != null) {
-    user = await db.user.findUnique({ where: { email } });
+    user = await prisma.user.findUnique({ where: { email } });
     userId = user?.id;
   }
 
@@ -34,7 +34,7 @@ export default async function Service({
       if (userId === undefined) {
         throw new Error("userId is undefined");
       }
-      await db.appointment.create({
+      await prisma.appointment.create({
         data: {
           date: dateObject,
           userId,
@@ -53,7 +53,7 @@ export default async function Service({
       throw new Error("userId is undefined");
     }
 
-    const hasAppointment = await db.appointment.findFirst({
+    const hasAppointment = await prisma.appointment.findFirst({
       where: {
         userId,
         serviceId: +params.id,
@@ -64,7 +64,7 @@ export default async function Service({
       throw new Error("Вы должны иметь запись чтобы оставить отзыв");
     }
 
-    await db.review.create({
+    await prisma.review.create({
       data: {
         content: reviewParam,
         userId,
@@ -77,16 +77,18 @@ export default async function Service({
     redirect("/service");
   }
 
-  const reviews = await db.review.findMany({
+  const reviews = await prisma.review.findMany({
     where: { serviceId: +params.id, status: "одобрено" },
     include: { user: true },
   });
 
-  const service = await db.service.findUnique({ where: { id: +params.id } });
+  const service = await prisma.service.findUnique({
+    where: { id: +params.id },
+  });
   if (!service) return <div>Сервис не найден</div>;
 
   const hasAppointment = userId
-    ? await db.appointment.findFirst({
+    ? await prisma.appointment.findFirst({
         where: {
           userId,
           serviceId: +params.id,
@@ -94,7 +96,7 @@ export default async function Service({
       })
     : null;
 
-  const appointments = await db.appointment.findMany({
+  const appointments = await prisma.appointment.findMany({
     where: { serviceId: +params.id },
     select: { date: true },
   });
@@ -105,8 +107,8 @@ export default async function Service({
   return (
     <div className="lg:w-1/2 mx-auto p-8">
       <div className="w-full flex flex-col-reverse ">
-        {role == "admin" ? (
-          <FormEditService serviceId={service.id} />
+        {role === "admin" ? (
+          <FormEditService serviceId={service.id.toString()} />
         ) : (
           <div></div>
         )}

@@ -4,7 +4,7 @@ import ClientFormEditService from "./ClientFormEditService";
 export default async function FormEditService({
   serviceId,
 }: {
-  serviceId: number;
+  serviceId: string;
 }) {
   const { userId, email, role } = await useUser();
   const formattedUserId = userId !== undefined ? userId.toString() : null;
