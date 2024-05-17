@@ -36,7 +36,11 @@ export default function Login() {
         setError(`Ошибка авторизации: ${errorText}`);
       }
     } catch (error) {
-      setError(`Ошибка отправки запроса: ${error.message}`);
+      if (error instanceof Error) {
+        setError(`Ошибка отправки запроса: ${error.message}`);
+      } else {
+        setError("Произошла неизвестная ошибка");
+      }
     }
   };
 

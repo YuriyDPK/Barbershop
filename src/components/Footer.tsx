@@ -1,5 +1,6 @@
 "use client";
 import React from "react";
+import Image from "next/image";
 
 type Props = {};
 
@@ -18,23 +19,39 @@ export default function Footer({}: Props) {
           {/* Иконки социальных сетей */}
           <div className="flex space-x-4">
             <a href="#" className="text-xl">
-              <img src="../../photos/tg.svg" alt="Telegram" className="w-10" />
+              <Image
+                src="/photos/tg.svg"
+                alt="Telegram"
+                className="w-10"
+                width={40}
+                height={40}
+              />
             </a>
             <a href="#" className="text-xl">
-              <img src="../../photos/vk.svg" alt="VKontakte" className="w-10" />
+              <Image
+                src="/photos/vk.svg"
+                alt="VKontakte"
+                className="w-10"
+                width={40}
+                height={40}
+              />
             </a>
             <a href="#" className="text-xl">
-              <img
-                src="../../photos/whatsup.svg"
+              <Image
+                src="/photos/whatsup.svg"
                 alt="WhatsApp"
                 className="w-10"
+                width={40}
+                height={40}
               />
             </a>
             <a href="#" className="text-xl w-10">
-              <img
-                src="../../photos/youtube.svg"
+              <Image
+                src="/photos/youtube.svg"
                 alt="YouTube"
                 className="w-10"
+                width={40}
+                height={40}
               />
             </a>
           </div>

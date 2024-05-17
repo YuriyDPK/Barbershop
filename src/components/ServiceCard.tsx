@@ -1,5 +1,6 @@
 "use client";
 import React, { useState } from "react";
+import Image from "next/image";
 
 interface ServiceCardProps {
   id: number;
@@ -29,11 +30,13 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
   };
 
   return (
-    <div className="w-full bg-white shadow-lg rounded-lg overflow-hidden transform transition-transform hover:scale-105 mx-auto  ">
-      <img
+    <div className="w-full bg-white shadow-lg rounded-lg overflow-hidden transform transition-transform hover:scale-105 mx-auto">
+      <Image
         className="w-full h-48 object-cover object-center"
         src={image}
         alt={title}
+        width={400} // Укажите ширину изображения
+        height={192} // Укажите высоту изображения
       />
       <div className="p-6 text-left">
         <h2 className="text-2xl font-bold text-gray-800 break-words">
@@ -41,7 +44,7 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
         </h2>
         <div className="mt-2 text-gray-600 break-words">
           {showFullDescription ? (
-            <p> {description}</p>
+            <p>{description}</p>
           ) : (
             <p className="truncate-text">Описание: {truncatedDescription}</p>
           )}

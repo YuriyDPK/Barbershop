@@ -1,6 +1,6 @@
-// components/MasterCard.tsx
 "use client";
 import React, { useState } from "react";
+import Image from "next/image";
 
 interface MasterCardProps {
   name: string;
@@ -28,10 +28,12 @@ const MasterCard: React.FC<MasterCardProps> = ({
 
   return (
     <div className="max-w-sm mx-auto bg-white shadow-lg rounded-lg overflow-hidden transform transition-transform hover:scale-105">
-      <img
+      <Image
         className="w-full h-56 object-cover object-center"
         src={image}
         alt={name}
+        width={400} // Укажите ширину
+        height={224} // Укажите высоту
       />
       <div className="p-6">
         <h2 className="text-2xl font-bold text-gray-800">{name}</h2>

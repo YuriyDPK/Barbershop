@@ -23,7 +23,7 @@ export default function SearchService() {
       params.delete("name");
     }
     replace(`${pathname}?${params.toString()}`);
-  }, [name]);
+  }, [name, pathname, replace, searchParams]);
 
   return (
     <div>

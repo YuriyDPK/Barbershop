@@ -1,6 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import DeleteService from "@/components/DeleteService";
+import Image from "next/image";
 
 interface Service {
   id: number;
@@ -33,10 +34,12 @@ export default function ServiceCardMore({
 
   return (
     <div className="mb-10 border overflow-hidden rounded-lg bg-white shadow-lg transform transition duration-500 hover:scale-105 max-w-[500px] w-full mx-auto">
-      <img
+      <Image
         src={"/assets/" + service.photo}
-        alt=""
+        alt={service.title}
         className="w-full object-cover rounded-t-lg"
+        width={500} // Укажите ширину изображения
+        height={300} // Укажите высоту изображения
       />
       <div className="p-6">
         <h3 className="mb-4 text-2xl font-bold text-gray-800 hover:text-gray-600 break-words">

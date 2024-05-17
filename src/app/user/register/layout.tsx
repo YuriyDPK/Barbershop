@@ -22,6 +22,7 @@ export default function RootLayout({
     email: "",
     password: "",
     phone: "",
+    form: "", // Добавил ключ для ошибок формы
   });
 
   const validateEmail = (email: string) => {
@@ -56,6 +57,7 @@ export default function RootLayout({
       email: "",
       password: "",
       phone: "",
+      form: "", // Добавил ключ для ошибок формы
     };
 
     if (!validateEmail(formData.email)) {
@@ -92,10 +94,17 @@ export default function RootLayout({
         }));
       }
     } catch (error) {
-      setErrors((prevErrors) => ({
-        ...prevErrors,
-        form: `Ошибка при отправке запроса: ${error.message}`,
-      }));
+      if (error instanceof Error) {
+        setErrors((prevErrors) => ({
+          ...prevErrors,
+          form: `Ошибка при отправке запроса: ${error.message}`,
+        }));
+      } else {
+        setErrors((prevErrors) => ({
+          ...prevErrors,
+          form: "Произошла неизвестная ошибка",
+        }));
+      }
     }
   };
 

@@ -1,3 +1,6 @@
+import React from "react";
+import Image from "next/image";
+
 export default function Page() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24 bg-white">
@@ -24,56 +27,70 @@ export default function Page() {
                     <div className="flex items-center space-x-6 lg:space-x-8">
                       <div className="grid flex-shrink-0 grid-cols-1 gap-y-6 lg:gap-y-8">
                         <div className="h-64 w-44 overflow-hidden rounded-lg sm:opacity-0 lg:opacity-100">
-                          <img
+                          <Image
                             src="https://i.pinimg.com/736x/5c/0f/ac/5c0fac4b5ce3e78265ef960c9720eaf8.jpg"
-                            alt=""
+                            alt="Описание изображения"
                             className="h-full w-full object-cover object-center"
+                            width={176}
+                            height={256}
                           />
                         </div>
                         <div className="h-64 w-44 overflow-hidden rounded-lg">
-                          <img
+                          <Image
                             src="https://i.pinimg.com/564x/47/d2/48/47d2482f10dafc18ce0e142fe2972385.jpg"
-                            alt=""
+                            alt="Описание изображения"
                             className="h-full w-full object-cover object-center"
+                            width={176}
+                            height={256}
                           />
                         </div>
                       </div>
                       <div className="grid flex-shrink-0 grid-cols-1 gap-y-6 lg:gap-y-8">
                         <div className="h-64 w-44 overflow-hidden rounded-lg">
-                          <img
+                          <Image
                             src="https://i.pinimg.com/564x/de/0e/3c/de0e3c6154e879a0ee040986a615eccf.jpg"
-                            alt=""
+                            alt="Описание изображения"
                             className="h-full w-full object-cover object-center"
+                            width={176}
+                            height={256}
                           />
                         </div>
                         <div className="h-64 w-44 overflow-hidden rounded-lg">
-                          <img
+                          <Image
                             src="https://i.pinimg.com/564x/12/d9/ee/12d9ee5ba6fee12d8364ab149f8bb5e8.jpg"
-                            alt=""
+                            alt="Описание изображения"
                             className="h-full w-full object-cover object-center"
+                            width={176}
+                            height={256}
                           />
                         </div>
                         <div className="h-64 w-44 overflow-hidden rounded-lg">
-                          <img
+                          <Image
                             src="https://i.pinimg.com/564x/12/5e/ec/125eec059dc8d64630168e4360cfd2ae.jpg"
-                            alt=""
+                            alt="Описание изображения"
                             className="h-full w-full object-cover object-center"
+                            width={176}
+                            height={256}
                           />
                         </div>
                       </div>
                       <div className="grid flex-shrink-0 grid-cols-1 gap-y-6 lg:gap-y-8">
                         <div className="h-64 w-44 overflow-hidden rounded-lg">
-                          <img
+                          <Image
                             src="https://i.pinimg.com/564x/63/4a/50/634a507b03da238a10408e58bd94492b.jpg"
-                            alt=""
+                            alt="Описание изображения"
                             className="h-full w-full object-cover object-center"
+                            width={176}
+                            height={256}
                           />
                         </div>
                         <div className="h-64 w-44 overflow-hidden rounded-lg">
-                          <img
+                          <Image
                             src="https://i.pinimg.com/564x/bd/54/b1/bd54b18ca26395d8eb1e78474f8f72b3.jpg"
-                            alt=""
+                            alt="Описание изображения"
                             className="h-full w-full object-cover object-center"
+                            width={176}
+                            height={256}
                           />
                         </div>
                       </div>
