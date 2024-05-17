@@ -1,44 +1,56 @@
 import { NextRequest, NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
-import { writeFile, mkdir, access } from "fs/promises"; // Добавлен импорт access
+import { writeFile, mkdir, access } from "fs/promises";
 import path from "path";
 
 const prisma = new PrismaClient();
 
+const allowedMimeTypes = [
+  "image/png",
+  "image/jpeg",
+  "image/jpg",
+  "image/svg+xml",
+];
+
 export const POST = async (req: NextRequest, res: NextResponse) => {
+  const baseUrl = req.nextUrl.origin;
+
   try {
     const formData = await req.formData();
-
     const file = formData.get("photo");
 
-    if (!file) {
-      return NextResponse.json(
-        { error: "No files received." },
-        { status: 400 }
-      );
-    }
+    let filename = null;
+    if (file && file instanceof File && file.name.length > 1) {
+      const mimeType = file.type;
+      if (!allowedMimeTypes.includes(mimeType)) {
+        return NextResponse.redirect(
+          `${baseUrl}/adminPanel?error=${encodeURIComponent(
+            "Недопустимый тип файла."
+          )}`
+        );
+      }
 
-    const buffer = Buffer.from(await file.arrayBuffer());
-    const filename = file.name.replaceAll(" ", "_");
+      const buffer = Buffer.from(await file.arrayBuffer());
+      filename = file.name.replaceAll(" ", "_");
 
-    const assetsDir = path.join(process.cwd(), "public/assets");
+      const assetsDir = path.join(process.cwd(), "public/assets");
 
-    // Создаем директорию, если её нет
-    try {
-      await mkdir(assetsDir, { recursive: true });
-    } catch (err) {
-      console.error("Error creating directory:", err);
-      throw err;
-    }
+      // Создаем директорию, если её нет
+      try {
+        await mkdir(assetsDir, { recursive: true });
+      } catch (err) {
+        console.error("Ошибка при создании директории:", err);
+        throw err;
+      }
 
-    const filePath = path.join(assetsDir, filename);
+      const filePath = path.join(assetsDir, filename);
 
-    // Проверяем существование файла
-    try {
-      await access(filePath);
-    } catch (err) {
-      // Если файла нет, записываем его
-      await writeFile(filePath, buffer);
+      // Проверяем существование файла и записываем его, если он не существует
+      try {
+        await access(filePath);
+      } catch (err) {
+        await writeFile(filePath, buffer);
+      }
     }
 
     const formDataObject = Object.fromEntries([...formData.entries()]);
@@ -75,14 +87,10 @@ export const POST = async (req: NextRequest, res: NextResponse) => {
       },
       data: updatedData,
     });
-    return NextResponse.redirect(
-      `http://localhost:3000/service/${formDataObject.id}`,
-      { status: 307 }
-    );
-    return NextResponse.json(
-      { message: "Service successfully updated", service: updatedService },
-      { status: 200 }
-    );
+
+    return NextResponse.redirect(`${baseUrl}/service/${formDataObject.id}`, {
+      status: 307,
+    });
   } catch (error) {
     console.error("Error occurred:", error);
     return NextResponse.json(

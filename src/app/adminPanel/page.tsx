@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import FormAddService from "@/components/adminPanel/FormAddService";
 import DeleteReview from "@/components/buttons/DeleteReview";
 import ChangeStatusAppointment from "@/components/buttons/ChangeStatusAppointment";
+import ChangeStatusReview from "@/components/buttons/ChangeStatusReview";
 
 export default async function Service() {
   const cookieStore = cookies();
@@ -48,7 +49,11 @@ export default async function Service() {
                   <div>
                     <b>Отзыв:</b> {review.content}
                   </div>
+                  <div>
+                    <b>Статус:</b> {review.status}
+                  </div>
                   <div className="flex flex-col gap-1">
+                    <ChangeStatusReview reviewId={review.id.toString()} />
                     <DeleteReview
                       serviceId={review.service.id.toString()}
                       reviewId={review.id.toString()}

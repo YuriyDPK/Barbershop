@@ -10,7 +10,7 @@ export default async function FormEditService({
   const formattedUserId = userId !== undefined ? userId.toString() : null;
 
   return (
-    <div className=" mt-24">
+    <div className=" mt-2">
       <h1>Редактировать услугу</h1>
       <ClientFormEditService userId={formattedUserId} serviceId={serviceId} />
     </div>

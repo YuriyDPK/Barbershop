@@ -8,6 +8,8 @@ export default function Login() {
     password: "",
   });
 
+  const [error, setError] = useState<string | null>(null);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
@@ -30,10 +32,11 @@ export default function Login() {
       if (response.ok) {
         window.location.href = "/user/account";
       } else {
-        console.error("Login Error:", response.statusText);
+        const errorText = await response.text();
+        setError(`Ошибка авторизации: ${errorText}`);
       }
     } catch (error) {
-      console.error("Error Sending Request:", error);
+      setError(`Ошибка отправки запроса: ${error.message}`);
     }
   };
 
@@ -43,6 +46,7 @@ export default function Login() {
         <h2 className="text-2xl font-semibold mb-4 text-black text-center">
           Авторизация
         </h2>
+        {error && <div className="text-red-500 text-center mb-4">{error}</div>}
         <form onSubmit={handleSubmit} className="space-y-3">
           <input
             type="email"

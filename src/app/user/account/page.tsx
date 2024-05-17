@@ -44,6 +44,9 @@ export default async function Account() {
                   <div>
                     <b>Отзыв:</b> {review.content}
                   </div>
+                  <div>
+                    <b>Статус:</b> {review.status}
+                  </div>
                   <div className="flex flex-col gap-1">
                     <EditReview
                       serviceId={review.service.id.toString()}

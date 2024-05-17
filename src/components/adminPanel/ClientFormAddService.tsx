@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 
 interface ClientFormAddServiceProps {
   userId: string | null;
@@ -10,10 +11,20 @@ const ClientFormAddService: React.FC<ClientFormAddServiceProps> = ({
   userId,
 }) => {
   const [isFormVisible, setIsFormVisible] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    const errorParam = searchParams.get("error");
+    if (errorParam) {
+      setError(decodeURIComponent(errorParam));
+    }
+  }, [searchParams]);
 
   const toggleFormVisibility = () => {
     setIsFormVisible((prev) => !prev);
   };
+
   return (
     <div className="mt-4 flex justify-center flex-col">
       <button
@@ -22,6 +33,7 @@ const ClientFormAddService: React.FC<ClientFormAddServiceProps> = ({
       >
         {isFormVisible ? "Скрыть форму" : "Добавить услугу"}
       </button>
+      {error && <div className="text-red-500 text-center mb-4">{error}</div>}
       {isFormVisible && (
         <form
           className="space-y-3 mt-2"

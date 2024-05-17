@@ -1,9 +1,9 @@
 import { db } from "@/shared/db";
-import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 import { cookies } from "next/headers";
 import SearchService from "@/components/SearchService";
+import ServiceCard from "@/components/ServiceCard";
 
 export default async function Service({
   searchParams,
@@ -45,116 +45,92 @@ export default async function Service({
     <div className="p-4 mb-5 mx-auto">
       <div className="flex lg:flex-row flex-col justify-center items-center gap-2">
         <h3>Сортировать по: </h3>
-        {
-          <Link
-            href={`?page=${page}&sortBy=price`}
-            className="bg-blue-100 hover:bg-blue-200 p-2 rounded-md"
-          >
-            цене
-          </Link>
-        }
-        {
-          <Link
-            href={`?page=${page}&sortBy=title`}
-            className="bg-blue-100 hover:bg-blue-200 p-2 rounded-md"
-          >
-            названию
-          </Link>
-        }
+        <Link
+          href={`?page=${page}&sortBy=price`}
+          className="bg-blue-100 hover:bg-blue-200 p-2 rounded-md"
+        >
+          цене
+        </Link>
+        <Link
+          href={`?page=${page}&sortBy=title`}
+          className="bg-blue-100 hover:bg-blue-200 p-2 rounded-md"
+        >
+          названию
+        </Link>
         <SearchService />
       </div>
       <div className="bg-gray-2 pb-10 pt-20 dark:bg-dark lg:pb-20 lg:pt-[120px] flex justify-center">
         <div className="container">
-          <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4 justify-center text-center align-middle">
-            {services.map((service, i) => (
-              <div
-                key={i}
-                className="mb-10 overflow-hidden rounded-lg bg-white border shadow-1 duration-300 hover:shadow-3 dark:bg-dark-2 dark:shadow-card dark:hover:shadow-3"
-              >
-                <img
-                  src={"/assets/" + service.photo}
-                  alt=""
-                  className="w-full object-cover rounded-t-lg h-72"
+          {services.length > 0 ? (
+            <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4 justify-center text-left align-middle">
+              {services.map((service, i) => (
+                <ServiceCard
+                  key={i}
+                  id={service.id}
+                  title={service.title}
+                  image={"/assets/" + service.photo}
+                  description={service.description}
+                  price={service.price}
                 />
-                <div className="p-8 text-center sm:p-9 md:p-7 xl:p-9">
-                  <h3 className="mb-4 block text-xl font-semibold text-dark hover:text-primary dark:text-black sm:text-[22px] md:text-xl lg:text-[22px] xl:text-xl 2xl:text-[22px]">
-                    Название: {service.title}
-                  </h3>
-                  <div className="mb-7 text-base leading-relaxed text-body-color dark:text-dark-6">
-                    Цена: {service.price}
-                  </div>
-                  <div className="mb-7 text-base leading-relaxed text-body-color dark:text-dark-6">
-                    Описание: {service.description}
-                  </div>
-                  <a
-                    href={`/service/${service.id}`}
-                    className="inline-block rounded-lg border px-7 py-2 text-base font-medium text-body-color transition hover:border-primary bg-gray-200 hover:bg-gray-300 hover:text-black dark:border-dark-3 dark:text-dark-6"
-                  >
-                    Подробнее
-                  </a>
-                </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center text-xl mt-20">Нет доступных услуг</div>
+          )}
         </div>
       </div>
 
       {/* Проверка на наличие предыдущей страницы */}
       <div className="flex gap-2 justify-center mt-5">
         {page > 1 && (
-          <>
-            <Link
-              href={`?page=${page - 1}`}
-              className="flex items-center justify-center px-4 h-10 ms-0  text-black bg-white rounded-lg hover:bg-gray-100  dark:bg-blue-300 dark:text-black dark:hover:bg-blue-400 dark:hover:text-white"
+          <Link
+            href={`?page=${page - 1}`}
+            className="flex items-center justify-center px-4 h-10 ms-0 text-black bg-white rounded-lg hover:bg-gray-100 dark:bg-blue-300 dark:text-black dark:hover:bg-blue-400 dark:hover:text-white"
+          >
+            <span className="sr-only">Previous</span>
+            <svg
+              className="w-3 h-3 rtl:rotate-180"
+              aria-hidden="true"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 6 10"
             >
-              {" "}
-              <span className="sr-only">Previous</span>
-              <svg
-                className="w-3 h-3 rtl:rotate-180"
-                aria-hidden="true"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 6 10"
-              >
-                <path
-                  stroke="currentColor"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M5 1 1 5l4 4"
-                />
-              </svg>{" "}
-            </Link>
-          </>
+              <path
+                stroke="currentColor"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M5 1 1 5l4 4"
+              />
+            </svg>
+          </Link>
         )}
-        <div className="flex items-center justify-center px-4 h-10 ms-0 text-black bg-blue-200 rounded-lg hover:bg-blue-300  dark:bg-blue-300 dark:text-black dark:hover:bg-blue-400 dark:hover:text-white">
+        <div className="flex items-center justify-center px-4 h-10 ms-0 text-black bg-blue-200 rounded-lg hover:bg-blue-300 dark:bg-blue-300 dark:text-black dark:hover:bg-blue-400 dark:hover:text-white">
           {page}
         </div>
         {/* Проверка на наличие следующей страницы */}
         {page < maxPage && (
-          <>
-            <Link
-              href={`?page=${page + 1}`}
-              className="flex items-center justify-center px-4 h-10 ms-0 leading-tight text-black bg-blue-300 rounded-lg hover:bg-blue-400 hover:text-black dark:bg-blue-100 dark:text-gray-800 dark:hover:bg-blue-400 dark:hover:text-white"
+          <Link
+            href={`?page=${page + 1}`}
+            className="flex items-center justify-center px-4 h-10 ms-0 leading-tight text-black bg-blue-300 rounded-lg hover:bg-blue-400 hover:text-black dark:bg-blue-100 dark:text-gray-800 dark:hover:bg-blue-400 dark:hover:text-white"
+          >
+            <span className="sr-only">Next</span>
+            <svg
+              className="w-3 h-3 rtl:rotate-180"
+              aria-hidden="true"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 6 10"
             >
-              <span className="sr-only">Next</span>
-              <svg
-                className="w-3 h-3 rtl:rotate-180"
-                aria-hidden="true"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 6 10"
-              >
-                <path
-                  stroke="currentColor"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="m1 9 4-4-4-4"
-                />
-              </svg>
-            </Link>
-          </>
+              <path
+                stroke="currentColor"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="m1 9 4-4-4-4"
+              />
+            </svg>
+          </Link>
         )}
       </div>
     </div>

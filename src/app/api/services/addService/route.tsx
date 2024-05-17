@@ -5,16 +5,33 @@ import path from "path";
 
 const prisma = new PrismaClient();
 
+const allowedMimeTypes = [
+  "image/png",
+  "image/jpeg",
+  "image/jpg",
+  "image/svg+xml",
+];
+
 export const POST = async (req: NextRequest, res: NextResponse) => {
+  const baseUrl = req.nextUrl.origin;
   try {
     const formData = await req.formData();
-
     const file = formData.get("photo");
 
     if (!file || !(file instanceof File)) {
-      return NextResponse.json(
-        { error: "No files received or file is invalid." },
-        { status: 400 }
+      return NextResponse.redirect(
+        `${baseUrl}/adminPanel?error=${encodeURIComponent(
+          "Файл не получен или файл недействителен."
+        )}`
+      );
+    }
+
+    const mimeType = file.type;
+    if (!allowedMimeTypes.includes(mimeType)) {
+      return NextResponse.redirect(
+        `${baseUrl}/adminPanel?error=${encodeURIComponent(
+          "Недопустимый тип файла."
+        )}`
       );
     }
 
@@ -25,8 +42,12 @@ export const POST = async (req: NextRequest, res: NextResponse) => {
     try {
       await mkdir(assetsDir, { recursive: true });
     } catch (err) {
-      console.error("Error creating directory:", err);
-      throw err;
+      console.error("Ошибка при создании директории:", err);
+      return NextResponse.redirect(
+        `${baseUrl}/adminPanel?error=${encodeURIComponent(
+          "Ошибка при создании директории."
+        )}`
+      );
     }
 
     await writeFile(path.join(assetsDir, filename), Buffer.from(buffer));
@@ -45,16 +66,17 @@ export const POST = async (req: NextRequest, res: NextResponse) => {
       typeof priceString !== "string" ||
       typeof managerIdString !== "string"
     ) {
-      return NextResponse.json(
-        { error: "Invalid form data." },
-        { status: 400 }
+      return NextResponse.redirect(
+        `${baseUrl}/adminPanel?error=${encodeURIComponent(
+          "Неверные данные формы."
+        )}`
       );
     }
 
     const price = parseFloat(priceString.replace(",", "."));
     const managerId = parseInt(managerIdString, 10);
 
-    const newService = await prisma.service.create({
+    await prisma.service.create({
       data: {
         title,
         description,
@@ -64,18 +86,15 @@ export const POST = async (req: NextRequest, res: NextResponse) => {
       },
     });
 
-    const redirectUrl = "/service"; // Адрес главной страницы
-    return new Response(null, {
-      status: 303,
-      headers: {
-        Location: redirectUrl,
-      },
-    });
+    return NextResponse.redirect(
+      `${baseUrl}/service?message=${encodeURIComponent("Услуга добавлена.")}`
+    );
   } catch (error) {
-    console.error("Error occurred:", error);
-    return NextResponse.json(
-      { message: "Ошибка при добавлении услуги" },
-      { status: 501 }
+    console.error("Произошла ошибка:", error);
+    return NextResponse.redirect(
+      `${baseUrl}/adminPanel?error=${encodeURIComponent(
+        "Ошибка при добавлении услуги."
+      )}`
     );
   }
 };

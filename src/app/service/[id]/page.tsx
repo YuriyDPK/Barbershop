@@ -3,15 +3,15 @@ import { db } from "@/shared/db";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import TakeReview from "@/components/TakeReview";
-import DeleteService from "@/components/DeleteService";
 import FormEditService from "@/components/adminPanel/FormEditService";
+import ServiceCardMore from "@/components/ServiceCardMore";
 
 export default async function Service({
   params,
   searchParams,
 }: {
   params: { id: string };
-  searchParams: { date: string; review: string };
+  searchParams: { date: string; review: string; status: string };
 }) {
   const cookieStore = cookies();
   const role = cookieStore.get("role")?.value;
@@ -47,7 +47,8 @@ export default async function Service({
   }
 
   let reviewParam = searchParams?.review ? String(searchParams?.review) : "";
-  if (reviewParam.length > 1) {
+  let statusParam = searchParams?.status ? String(searchParams?.status) : "";
+  if (reviewParam.length > 1 && statusParam === "ожидание") {
     if (userId === undefined) {
       throw new Error("userId is undefined");
     }
@@ -60,22 +61,24 @@ export default async function Service({
     });
 
     if (!hasAppointment) {
-      throw new Error("You must have an appointment to leave a review");
+      throw new Error("Вы должны иметь запись чтобы оставить отзыв");
     }
 
     await db.review.create({
       data: {
         content: reviewParam,
         userId,
+        status: "ожидание",
         serviceId: +params.id,
       },
     });
     reviewParam = "";
+    statusParam = "";
     redirect("/service");
   }
 
   const reviews = await db.review.findMany({
-    where: { serviceId: +params.id },
+    where: { serviceId: +params.id, status: "одобрено" },
     include: { user: true },
   });
 
@@ -101,34 +104,14 @@ export default async function Service({
 
   return (
     <div className="lg:w-1/2 mx-auto p-8">
-      <div className="w-full flex flex-col-reverse gap-5">
+      <div className="w-full flex flex-col-reverse ">
         {role == "admin" ? (
           <FormEditService serviceId={service.id} />
         ) : (
           <div></div>
         )}
 
-        <div className="mb-10 border overflow-hidden rounded-lg bg-white shadow-1 duration-300 hover:shadow-3 dark:bg-dark-2 dark:shadow-card dark:hover:shadow-3 max-w-[500px] w-full mx-auto">
-          <img
-            src={"/assets/" + service.photo}
-            alt=""
-            className="w-full object-cover rounded-t-lg"
-          />
-          <div className="p-8 text-center sm:p-9 md:p-7 xl:p-9">
-            <h3 className="mb-4 block text-xl font-semibold text-dark hover:text-primary dark:text-black sm:text-[22px] md:text-xl lg:text-[22px] xl:text-xl 2xl:text-[22px]">
-              Название: {service.title}
-            </h3>
-            <div className="mb-7 text-base leading-relaxed text-body-color dark:text-dark-6">
-              Цена: {service.price}
-            </div>
-            <div className="mb-7 text-base leading-relaxed text-body-color dark:text-dark-6">
-              Описание: {service.description}
-            </div>
-            {role === "admin" && (
-              <DeleteService serviceId={service.id.toString()} />
-            )}
-          </div>
-        </div>
+        <ServiceCardMore service={service} role={role} />
       </div>
 
       {email != null ? (
@@ -140,20 +123,23 @@ export default async function Service({
         <div></div>
       )}
 
-      <div className="flex flex-col mb-5 mt-5">
-        <h2 className="text-xl font-semibold">Отзывы:</h2>
-        {reviews.map((review, i) => (
-          <div key={i} className="mt-3">
-            <div className="flex flex-col">
-              <div>
-                <b>Клиент:</b> {review.user.username}
+      <div className="flex flex-col mt-10">
+        <h2 className="text-2xl font-bold mb-5">Отзывы:</h2>
+        {reviews.length > 0 ? (
+          reviews.map((review, i) => (
+            <div
+              key={i}
+              className="mb-4 p-4 border rounded-lg bg-gray-50 shadow-md"
+            >
+              <div className="text-gray-700 font-semibold mb-2">
+                Клиент: {review.user.username}
               </div>
-              <div>
-                <b>Отзыв:</b> {review.content}
-              </div>
+              <div className="text-gray-600">{review.content}</div>
             </div>
-          </div>
-        ))}
+          ))
+        ) : (
+          <div className="text-gray-600">Отзывов пока нет.</div>
+        )}
       </div>
     </div>
   );

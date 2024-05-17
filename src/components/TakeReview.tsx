@@ -20,8 +20,10 @@ export default function TakeReview({
       const params = new URLSearchParams(searchParams);
       if (review) {
         params.set("review", review);
+        params.set("status", "ожидание");
       } else {
         params.delete("review");
+        params.delete("status");
       }
       replace(`${pathname}?${params.toString()}`);
       setReview("");
@@ -52,6 +54,7 @@ export default function TakeReview({
         placeholder="Введите ваш отзыв"
       />
       <input type="hidden" name="serviceId" value={serviceId} />
+      <input type="hidden" name="status" value="ожидание" />
       {error && <p className="text-red-500 mt-2">{error}</p>}
       <button
         onClick={handleSubmit}
