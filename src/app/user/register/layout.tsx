@@ -7,9 +7,9 @@ const inter = Inter({ subsets: ["latin"] });
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   const [formData, setFormData] = useState({
     username: "",
     email: "",
@@ -22,7 +22,7 @@ export default function RootLayout({
     email: "",
     password: "",
     phone: "",
-    form: "", // Добавил ключ для ошибок формы
+    form: "",
   });
 
   const validateEmail = (email: string) => {
@@ -31,8 +31,8 @@ export default function RootLayout({
   };
 
   const validatePhone = (phone: string) => {
-    const phoneRegex = /^(?:\+7|8)\d{10}$/;
-    return phoneRegex.test(phone);
+    const phoneRegex = /^(?:\+7|8)\s?\d{3}\s?\d{3}\s?\d{2}\s?\d{2}$/;
+    return phoneRegex.test(phone.replace(/\s+/g, ""));
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -42,7 +42,6 @@ export default function RootLayout({
       [name]: value,
     }));
 
-    // Reset error messages when user starts typing
     setErrors((prevErrors) => ({
       ...prevErrors,
       [name]: "",
@@ -57,7 +56,7 @@ export default function RootLayout({
       email: "",
       password: "",
       phone: "",
-      form: "", // Добавил ключ для ошибок формы
+      form: "",
     };
 
     if (!validateEmail(formData.email)) {
@@ -65,8 +64,7 @@ export default function RootLayout({
     }
 
     if (!validatePhone(formData.phone)) {
-      newErrors.phone =
-        "Некорректный номер телефона. Введите только цифры, от 10 до 15 символов.";
+      newErrors.phone = "Некорректный номер телефона.";
     }
 
     if (Object.values(newErrors).some((error) => error)) {
@@ -75,7 +73,7 @@ export default function RootLayout({
     }
 
     try {
-      const response = await fetch("http://localhost:3000/api/users/register", {
+      const response = await fetch("/api/users/register", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -84,13 +82,12 @@ export default function RootLayout({
       });
 
       if (response.ok) {
-        // Регистрация успешна, перенаправляем пользователя на страницу профиля
         window.location.href = "/user/account";
       } else {
-        const errorText = await response.text();
+        const errorResponse = await response.json();
         setErrors((prevErrors) => ({
           ...prevErrors,
-          form: `Ошибка при регистрации: ${errorText}`,
+          form: `Ошибка при регистрации: ${errorResponse.message}`,
         }));
       }
     } catch (error) {

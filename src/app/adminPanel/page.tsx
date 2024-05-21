@@ -5,8 +5,15 @@ import DeleteReview from "@/components/buttons/DeleteReview";
 import ChangeStatusAppointment from "@/components/buttons/ChangeStatusAppointment";
 import ChangeStatusReview from "@/components/buttons/ChangeStatusReview";
 import prisma from "@/lib/prisma"; // Импорт Prisma из lib/prisma
+import { useState } from "react";
 
-export default async function Service() {
+const PAGE_SIZE = 3;
+
+export default async function Service({
+  searchParams,
+}: {
+  searchParams: { pageAppointments?: string; pageReviews?: string };
+}) {
   const cookieStore = cookies();
   const email = cookieStore.get("email")?.value;
   const role = cookieStore.get("role")?.value;
@@ -19,13 +26,24 @@ export default async function Service() {
     redirect("/user/login");
   }
 
+  const pageReviews = parseInt(searchParams.pageReviews) || 1;
+  const pageAppointments = parseInt(searchParams.pageAppointments) || 1;
+
   const reviews = await prisma.review.findMany({
+    skip: (pageReviews - 1) * PAGE_SIZE,
+    take: PAGE_SIZE,
     include: { service: true, user: true },
   });
 
+  const reviewsCount = await prisma.review.count();
+
   const appointments = await prisma.appointment.findMany({
+    skip: (pageAppointments - 1) * PAGE_SIZE,
+    take: PAGE_SIZE,
     include: { service: true, user: true },
   });
+
+  const appointmentsCount = await prisma.appointment.count();
 
   return (
     <div className="p-4 lg:w-1/2 mx-auto ">
@@ -65,6 +83,12 @@ export default async function Service() {
           ) : (
             <p className="text-center">Отзывы отсутствуют</p>
           )}
+          <Pagination
+            currentPage={pageReviews}
+            totalCount={reviewsCount}
+            pageSize={PAGE_SIZE}
+            urlPath="/admin/service?pageReviews="
+          />
         </div>
         <div className="flex flex-col gap-2  w-full">
           <h1 className="text-xl text-center mt-2">Заявки</h1>
@@ -106,8 +130,34 @@ export default async function Service() {
           ) : (
             <div className="text-center">Нет записей</div>
           )}
+          <Pagination
+            currentPage={pageAppointments}
+            totalCount={appointmentsCount}
+            pageSize={PAGE_SIZE}
+            urlPath="/adminPanel?pageAppointments="
+          />
         </div>
       </div>
+    </div>
+  );
+}
+
+function Pagination({ currentPage, totalCount, pageSize, urlPath }) {
+  const totalPages = Math.ceil(totalCount / pageSize);
+
+  return (
+    <div className="flex justify-center mt-4">
+      {Array.from({ length: totalPages }, (_, i) => (
+        <a
+          key={i}
+          href={`${urlPath}${i + 1}`}
+          className={`px-3 py-1 mx-1 border rounded ${
+            i + 1 === currentPage ? "bg-gray-300" : "bg-white"
+          }`}
+        >
+          {i + 1}
+        </a>
+      ))}
     </div>
   );
 }
